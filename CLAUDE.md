@@ -16,8 +16,16 @@ Where doc and web code disagree: **code wins for data**, **doc wins for visuals*
 - `lib/theme/uiverse_text.dart` — `UiText.pageTitle/.sectionHead/.body/.chip/.caption/.meta/...`, `UiText.mono(size, bold:, height:, track:)`, `UiText.tabular`. Styles have no colour: `.copyWith(color: context.ui.text2)`.
 - `lib/theme/motion.dart` — `kDur kEase kTransition kFadeUp kFadeIn kSheet`, `Lift.l1..l5`, `hardShadow(d, color)`, `motion(context, d)` (reduced-motion aware), `Bp.sm/md/lg/xl`.
 - `lib/theme/uiverse_theme.dart` — `uiverseTheme(Brightness)`.
-- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `Hit48` (48dp hit area), `LogoMark(size:)`.
+- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `Hit48` (48dp hit area), `LogoMark(size:)`, `HoverTap` (hover fill, 2px accent focus ring, 48dp min hit, semantics, no ink — the default tappable).
 - `lib/data/models.dart` — `Item, Source, Palette, Block, Crop, ArchetypeDef`, enums `Archetype(.slug)`, `Kind`, `Device`, `Viewport(.w/.h/.label/.pick)`, `Tier`.
+
+## Phase 1 APIs (read the files for exact signatures)
+- **Data** `lib/data/`: `catalog.dart` (`kItems`, `bySlug`, `screens()`, `components()`, `kSources`, `sourceOf`, `kArchetypes`, `kLayouts`, `kPaletteItems`, `kCreators`), `palettes.dart` (16 palettes, `paletteByKey`, `hexOf`), `taxonomy.dart` (`Tax`, `kCategories`… `kSorts`, `taxName`, `componentGroups`), `query.dart` (`Filters` with web param names, `applyFilters`, `sortItems`, `parseQuery`, `searchItems`, `facetCounts`, `similarTo`, `mixFeed`), `spec.dart` (`colorRoles`, `typeScale`, `layoutSpec`, `sections`, `responsiveRules`, `kSpacing`), `prompt.dart` (`ToolId`, `StackId`, `PromptOptions`, `buildPrompt`, `estimateTokens`), `format.dart` (`compact`, `timeAgo`). Web parity tests use `test/data/fixtures/web_reference.json`.
+- **State** `lib/state/`: `sharedPreferencesProvider` (must be overridden; tests use `test/shell/app_harness.dart` `pumpApp()` / `test/state/state_harness.dart`), `clockProvider`, `themeModeProvider`, `savesProvider` (+ `SavesState.isSaved/count/savesIn/countIn/collectionName`), `promptQuotaProvider` (`consume/reset/remaining/locked`), `pickFoldedProvider`.
+- **Save widgets** `lib/widgets/save/`: `SaveButton(slug, variant: SaveButtonVariant.icon|solid|inline)`, `saveToastProvider`.
+- **Shell** `lib/shell/`: `AppShell`, `Navbar`, `Rail`, `BottomNav`, `SearchField.compact()/.big()`, `ThemeToggle`.
+- **Router** `lib/router/`: `Routes` path helpers (`Routes.screen(slug)`, `searchFor(q)`, `facets(base, list)`…), `AppRoute` enum, `facetsOf(state)`, `openDetail(context, item)` / `openDetailSlug`. Route→screen table = `buildRoute` switch in `routes.dart` — **only the orchestrator edits it**; agents export screen widgets and state the constructor to wire. Detail screens must not scroll themselves (the presentation wraps them in a scroll view); `DetailPresentation.of(context)` tells overlay vs page.
+- **Mock** `lib/mock/mock_screen.dart`: `MockScreen(item:, full: false, viewport:)` (feeds: fixed `item.aspect` crop; detail: `full: true` or a `viewport`, content height), `MockScreen.nativeViewport(item)`. Gallery at `/dev/mock`.
 
 ## Rules
 - Square corners, 1px ink borders, hard offset shadows only. Never Material ripples/elevation; custom widgets over Material nav/chips.
