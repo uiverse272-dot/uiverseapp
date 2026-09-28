@@ -147,9 +147,13 @@ class _Caption extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Text(
-                '${compact(item.saves)} saves',
-                style: UiText.meta.copyWith(color: c.text, fontFeatures: UiText.tabular),
+              Flexible(
+                child: Text(
+                  '${compact(item.saves)} saves',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: UiText.meta.copyWith(color: c.text, fontFeatures: UiText.tabular),
+                ),
               ),
             ],
           ),
