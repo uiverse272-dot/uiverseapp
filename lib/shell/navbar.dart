@@ -19,10 +19,13 @@ import 'theme_toggle.dart';
 /// Phone: logo · yellow search · theme. ≥768: search · profile · saved.
 /// ≥1024 adds "More ▾" before the profile cell.
 class Navbar extends StatelessWidget {
-  const Navbar({super.key, this.readingAs});
+  const Navbar({super.key, this.readingAs, this.location = ''});
 
   /// Forwarded to the navbar [SearchField] for its "Reading as" chips.
   final ReadingAsBuilder? readingAs;
+
+  /// Current path, for the active "More" entry.
+  final String location;
 
   static const double height = 64;
 
@@ -57,7 +60,7 @@ class Navbar extends StatelessWidget {
               ),
             ),
           ),
-          if (lg) const _Cell(child: _MoreMenu()),
+          if (lg) _Cell(child: _MoreMenu(location: location)),
           if (wide) const _Cell(child: _ProfileCell()),
           if (wide) const _Cell(child: _SavedCell()),
           if (!wide) const _Cell(width: 56, child: ThemeToggle()),
@@ -187,7 +190,9 @@ class _SavedCell extends ConsumerWidget {
 
 /// "More ▾" (≥1024): 192-wide menu under the cell's right edge, closes on outside tap.
 class _MoreMenu extends StatefulWidget {
-  const _MoreMenu();
+  const _MoreMenu({required this.location});
+
+  final String location;
 
   @override
   State<_MoreMenu> createState() => _MoreMenuState();
@@ -265,31 +270,54 @@ class _MoreMenuState extends State<_MoreMenu> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var i = 0; i < moreMenu.length; i++)
-                    HoverTap(
+                    _MoreItem(
+                      dest: moreMenu[i],
+                      on: isNavActive(widget.location, moreMenu[i].path),
+                      last: i == moreMenu.length - 1,
                       onTap: () {
                         _close();
                         context.go(moreMenu[i].path);
                       },
-                      link: true,
-                      minSize: const Size(double.infinity, 44),
-                      builder: (context, hovered) => Container(
-                        constraints: const BoxConstraints(minHeight: 44),
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: hovered ? c.bgSubtle : null,
-                          border: i < moreMenu.length - 1
-                              ? Border(bottom: BorderSide(color: c.rule))
-                              : null,
-                        ),
-                        child: Text(moreMenu[i].label, style: UiText.body.copyWith(color: c.text)),
-                      ),
                     ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A "More" menu row. Active = accent label + a 3px accent bar (non-colour cue, §14).
+class _MoreItem extends StatelessWidget {
+  const _MoreItem({required this.dest, required this.on, required this.last, required this.onTap});
+
+  final NavDest dest;
+  final bool on;
+  final bool last;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.ui;
+    return HoverTap(
+      onTap: onTap,
+      link: true,
+      selected: on,
+      minSize: const Size(double.infinity, 48),
+      builder: (context, hovered) => Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.fromLTRB(11, 10, 14, 10),
+        decoration: BoxDecoration(
+          color: hovered ? c.bgSubtle : null,
+          border: Border(
+            left: BorderSide(color: on ? c.accent : Colors.transparent, width: 3),
+            bottom: last ? BorderSide.none : BorderSide(color: c.rule),
+          ),
+        ),
+        child: Text(dest.label, style: UiText.body.copyWith(color: on ? c.accent : c.text)),
       ),
     );
   }
