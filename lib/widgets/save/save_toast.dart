@@ -135,7 +135,9 @@ class _SaveToastState extends ConsumerState<SaveToast> {
           Expanded(
             child: Text(
               widget.toast.text,
-              maxLines: 1,
+              // Web truncates to one line, but Space Mono at phone widths cuts
+              // off the collection name; two lines keeps it readable.
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: UiText.button.copyWith(color: c.text),
             ),
