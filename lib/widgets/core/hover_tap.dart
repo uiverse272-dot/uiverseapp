@@ -15,6 +15,7 @@ class HoverTap extends StatefulWidget {
     this.label,
     this.selected,
     this.toggled,
+    this.checked,
     this.expanded,
     this.minSize = const Size(48, 48),
     this.link = false,
@@ -27,6 +28,9 @@ class HoverTap extends StatefulWidget {
   final String? label;
   final bool? selected;
   final bool? toggled;
+
+  /// Checkbox state (announced as a checkbox rather than a toggle).
+  final bool? checked;
   final bool? expanded;
 
   /// Minimum tappable size; the visual stays centred inside it.
@@ -52,6 +56,7 @@ class _HoverTapState extends State<HoverTap> {
       label: widget.label,
       selected: widget.selected,
       toggled: widget.toggled,
+      checked: widget.checked,
       expanded: widget.expanded,
       // With a label the child's semantics (including the GestureDetector's
       // tap action) are excluded, so re-expose the tap here. Without one the
