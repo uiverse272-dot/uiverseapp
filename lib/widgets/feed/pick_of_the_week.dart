@@ -168,17 +168,28 @@ class _PickCard extends StatelessWidget {
             border: Border.all(color: c.border),
             boxShadow: [hardShadow(Lift.l4, c.border)],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          // The header buttons sit on top so their 48-tall hit areas can
+          // overhang the 32-tall header into the body's top padding (§14).
+          child: Stack(
             children: [
-              _Header(open: open, onToggle: onToggle, onFold: onFold),
-              _Body(item: item, onOpen: onOpen),
-              if (open)
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: size.height * 0.45),
-                  child: _Details(item: item),
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _Header(),
+                  _Body(item: item, onOpen: onOpen),
+                  if (open)
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: size.height * 0.45),
+                      child: _Details(item: item),
+                    ),
+                ],
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: _HeaderButtons(open: open, onToggle: onToggle, onFold: onFold),
+              ),
             ],
           ),
         ),
@@ -187,35 +198,16 @@ class _PickCard extends StatelessWidget {
   }
 }
 
+/// Yellow header bar, 32 tall; leaves room on the right for [_HeaderButtons].
 class _Header extends StatelessWidget {
-  const _Header({required this.open, required this.onToggle, required this.onFold});
-
-  final bool open;
-  final VoidCallback onToggle;
-  final VoidCallback onFold;
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    final divider = BorderSide(color: c.onSignal.withValues(alpha: 0.4));
-    Widget button(String label, Widget Function(Color) icon, VoidCallback onTap, {bool? expanded}) => HoverTap(
-          onTap: onTap,
-          label: label,
-          expanded: expanded,
-          minSize: const Size(32, 32),
-          builder: (context, hovered) => Container(
-            width: 32,
-            height: 32,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: hovered ? Colors.black.withValues(alpha: 0.1) : null,
-              border: Border(left: divider),
-            ),
-            child: icon(c.onSignal),
-          ),
-        );
     return Container(
-      padding: const EdgeInsets.only(left: 12),
+      height: 32,
+      padding: const EdgeInsets.only(left: 12, right: 2 * _kHeaderButton),
       decoration: BoxDecoration(color: c.signal, border: Border(bottom: BorderSide(color: c.border))),
       child: Row(
         children: [
@@ -229,15 +221,60 @@ class _Header extends StatelessWidget {
               style: UiText.eyebrow.copyWith(color: c.onSignal),
             ),
           ),
-          button(
-            open ? 'Show less' : 'Show details',
-            (color) => UiIcon(Ui.chevron, size: 15, color: color, turns: open ? 0 : 0.5),
-            onToggle,
-            expanded: open,
-          ),
-          button('Hide pick of the week', (color) => UiIcon(Ui.close, size: 14, color: color), onFold),
         ],
       ),
+    );
+  }
+}
+
+/// Header button width; the visual cell is 32 tall (the header), the hit area 48×48.
+const double _kHeaderButton = 48;
+
+/// "Show details" / "Hide pick of the week": 48-wide cells drawn in the
+/// 32-tall header whose hit areas extend 16 into the body below.
+class _HeaderButtons extends StatelessWidget {
+  const _HeaderButtons({required this.open, required this.onToggle, required this.onFold});
+
+  final bool open;
+  final VoidCallback onToggle;
+  final VoidCallback onFold;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.ui;
+    final divider = BorderSide(color: c.onSignal.withValues(alpha: 0.4));
+    Widget button(String label, Widget Function(Color) icon, VoidCallback onTap, {bool? expanded}) => HoverTap(
+          onTap: onTap,
+          label: label,
+          expanded: expanded,
+          builder: (context, hovered) => SizedBox(
+            width: _kHeaderButton,
+            height: 48,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                height: 31,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: hovered ? Colors.black.withValues(alpha: 0.1) : null,
+                  border: Border(left: divider),
+                ),
+                child: icon(c.onSignal),
+              ),
+            ),
+          ),
+        );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        button(
+          open ? 'Show less' : 'Show details',
+          (color) => UiIcon(Ui.chevron, size: 15, color: color, turns: open ? 0 : 0.5),
+          onToggle,
+          expanded: open,
+        ),
+        button('Hide pick of the week', (color) => UiIcon(Ui.close, size: 14, color: color), onFold),
+      ],
     );
   }
 }
@@ -252,12 +289,15 @@ class _Body extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.ui;
     return Padding(
-      padding: const EdgeInsets.all(12),
+      // Bottom 4: the action row's 48 hit area overhangs its 32 visuals by 8.
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
             onTap: onOpen,
+            // Same action as the title and "Open breakdown"; keep it out of the a11y tree.
+            excludeFromSemantics: true,
             child: Container(
               width: 68,
               padding: const EdgeInsets.all(2),
@@ -308,13 +348,12 @@ class _Body extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: UiText.caption.copyWith(color: c.text2),
                 ),
-                const SizedBox(height: 8),
+                // 32-tall controls in 48 hit areas: the 8 overhang replaces the 8 gap.
                 Row(
                   children: [
                     Expanded(
                       child: HoverTap(
                         onTap: onOpen,
-                        minSize: const Size(0, 32),
                         builder: (context, hovered) => Container(
                           height: 32,
                           alignment: Alignment.center,
@@ -326,12 +365,19 @@ class _Body extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(border: Border.all(color: c.border)),
-                      child: SaveButton(item.slug),
+                    SizedBox.square(
+                      dimension: 48,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(border: Border.all(color: c.border)),
+                          ),
+                          SaveButton(item.slug),
+                        ],
+                      ),
                     ),
                   ],
                 ),

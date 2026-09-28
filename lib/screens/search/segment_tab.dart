@@ -32,7 +32,6 @@ class SegmentTab extends StatelessWidget {
       link: true,
       selected: selected,
       label: count == null ? label : '$label $count',
-      minSize: const Size(0, 44),
       builder: (context, hovered) {
         final Color fg = selected ? c.accentFg : (hovered ? c.text : c.text2);
         return AnimatedContainer(

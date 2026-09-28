@@ -158,9 +158,7 @@ class ParseChip extends StatelessWidget {
     final String text = '${term.dimension}: ${term.label}';
     return HoverTap(
       onTap: onRemove,
-      link: true,
       label: 'Remove $text',
-      minSize: const Size(0, 44),
       builder: (context, hovered) => AnimatedContainer(
         duration: motion(context, kTransition),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -238,7 +236,6 @@ class _Suggestion extends StatelessWidget {
       onTap: () => context.go(Routes.searchFor(text)),
       link: true,
       label: text,
-      minSize: const Size(0, 44),
       builder: (context, hovered) => AnimatedContainer(
         duration: motion(context, kTransition),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

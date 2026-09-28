@@ -155,7 +155,8 @@ class PlanCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(plan.note, style: UiText.mono(13, height: 1.625, color: c.text2)),
           if (fill) const Spacer(),
-          const SizedBox(height: 20),
+          // 40-tall button in a 48 hit area: 16 + 4 keeps the 20 gap.
+          const SizedBox(height: 16),
           BoxButton(first ? 'Start free' : 'Choose plan', onTap: () {}, accent: popular),
         ],
       ),

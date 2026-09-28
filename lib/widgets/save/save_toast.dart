@@ -196,12 +196,12 @@ class _SaveToastState extends ConsumerState<SaveToast> {
               for (final col in collections)
                 HoverTap(
                   onTap: () => ctl.moveTo(slug, col.id),
-                  minSize: const Size(double.infinity, 44),
+                  minSize: const Size(double.infinity, 48),
                   builder: (context, hovered) => Container(
                     color: hovered ? c.bgSubtle : null,
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    constraints: const BoxConstraints(minHeight: 44),
+                    constraints: const BoxConstraints(minHeight: 48),
                     child: Text(col.name, style: UiText.body.copyWith(color: c.text)),
                   ),
                 ),

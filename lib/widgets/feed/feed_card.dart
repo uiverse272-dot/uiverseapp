@@ -96,12 +96,19 @@ class _FeedCardState extends State<FeedCard> {
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: _open,
+                // The plate above already announces and opens the item.
+                excludeFromSemantics: true,
                 child: ExcludeSemantics(child: _Caption(item: item)),
               ),
             ],
           ),
-          // 48dp hit area centred on the 28px icon, which sits flush bottom-right.
-          Positioned(right: -10, bottom: -10, child: SaveButton(item.slug)),
+          // The 28px icon sits flush bottom-right; its 48dp hit area extends up
+          // and left inside the card (hits outside the card's box never land).
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: SaveButton(item.slug, iconAlignment: Alignment.bottomRight),
+          ),
         ],
       ),
     );

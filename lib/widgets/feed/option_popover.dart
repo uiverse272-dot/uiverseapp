@@ -134,7 +134,11 @@ class _OptionPopoverState extends State<OptionPopover> {
       overlayChildBuilder: (context) => Stack(
         children: [
           Positioned.fill(
-            child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: _close),
+            child: Semantics(
+              label: 'Close',
+              button: true,
+              child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: _close),
+            ),
           ),
           CompositedTransformFollower(
             link: _link,
@@ -203,15 +207,15 @@ class OptionList extends StatelessWidget {
     required this.options,
     required this.selected,
     required this.onPick,
-    this.rowHeight,
+    this.rowHeight = 48,
   });
 
   final List<Tax> options;
   final String? selected;
   final ValueChanged<String> onPick;
 
-  /// Minimum row height (48 in the phone sheet for touch).
-  final double? rowHeight;
+  /// Minimum row height; defaults to 48 so every option is a 48dp target (§14).
+  final double rowHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -225,9 +229,9 @@ class OptionList extends StatelessWidget {
             onTap: () => onPick(options[i].slug),
             label: options[i].name,
             selected: options[i].slug == selected,
-            minSize: Size(0, rowHeight ?? 0),
+            minSize: Size(0, rowHeight),
             builder: (context, hovered) => Container(
-              constraints: BoxConstraints(minHeight: rowHeight ?? 0),
+              constraints: BoxConstraints(minHeight: rowHeight),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: hovered ? c.bgSubtle : null,
@@ -288,7 +292,7 @@ class OptionSheet extends StatelessWidget {
             ),
             Flexible(
               child: SingleChildScrollView(
-                child: OptionList(options: options, selected: selected, onPick: onPick, rowHeight: 48),
+                child: OptionList(options: options, selected: selected, onPick: onPick),
               ),
             ),
           ],

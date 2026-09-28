@@ -211,7 +211,8 @@ class _Media extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: 12, right: topRightGap),
+          // The toggle's 48 hit area overhangs its 34 box by 7: 5 + 7 keeps the 12 gap.
+          padding: EdgeInsets.only(bottom: 5, right: topRightGap),
           child: Row(
             children: [
               _DeviceToggle(device: device, onChanged: onDevice),
@@ -289,43 +290,51 @@ class _DeviceToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
+    // The bordered strip stays 34 tall (28 segments + 2 padding + 1 border);
+    // each segment's hit area extends to 48 above and below it (§14).
     return Semantics(
       container: true,
       label: 'Device',
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(border: Border.all(color: c.border)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final vp in Viewport.values) ...[
-              if (vp != Viewport.values.first) const SizedBox(width: 4),
-              HoverTap(
-                onTap: () => onChanged(vp),
-                toggled: vp == device,
-                label: vp.label,
-                // Segments stay compact visually (§14 notes ~24dp on web); 48 wide, 28 tall.
-                minSize: const Size(48, 28),
-                builder: (context, hovered) {
-                  final on = vp == device;
-                  return AnimatedContainer(
-                    duration: motion(context, kTransition),
-                    height: 28,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    color: on ? c.accent : null,
-                    child: Text(
-                      vp.label,
-                      style: UiText.small.copyWith(
-                        color: on ? c.accentFg : (hovered ? c.text : c.text2),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ],
-        ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            top: 7,
+            bottom: 7,
+            child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: c.border))),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final vp in Viewport.values) ...[
+                  if (vp != Viewport.values.first) const SizedBox(width: 4),
+                  HoverTap(
+                    onTap: () => onChanged(vp),
+                    toggled: vp == device,
+                    label: vp.label,
+                    builder: (context, hovered) {
+                      final on = vp == device;
+                      return AnimatedContainer(
+                        duration: motion(context, kTransition),
+                        height: 28,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        color: on ? c.accent : null,
+                        child: Text(
+                          vp.label,
+                          style: UiText.small.copyWith(
+                            color: on ? c.accentFg : (hovered ? c.text : c.text2),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -394,14 +403,12 @@ class _Rail extends StatelessWidget {
             child: Text(item.title, style: UiText.detailTitle.copyWith(color: c.text)),
           ),
         ),
-        const SizedBox(height: 4),
         Align(
           alignment: Alignment.centerLeft,
           child: HoverTap(
             onTap: () => goTo(context, Routes.source(item.source.slug)),
             link: true,
             label: 'By: ${item.source.name}',
-            minSize: const Size(48, 40),
             builder: (context, hovered) => Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -427,14 +434,14 @@ class _Rail extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        // 44-tall buttons below sit in 48 hit areas; the gaps shrink by the overhang.
+        const SizedBox(height: 8),
         Tooltip(
           message: 'This would open ${item.source.domain}',
           child: HoverTap(
             // Deliberately inert: captures are indexed, not linked out, in this demo.
             onTap: () {},
             label: 'Open live site',
-            minSize: const Size(48, 44),
             builder: (context, hovered) => Container(
               height: 44,
               width: double.infinity,
@@ -453,9 +460,9 @@ class _Rail extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         SaveButton(item.slug, variant: SaveButtonVariant.solid, expand: true),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _ActionTrio(
           onPrompt: onPrompt,
           onCode: () => onTab(DetailTab.code),
@@ -473,7 +480,6 @@ class _Rail extends StatelessWidget {
               HoverTap(
                 onTap: () => goTo(context, Routes.searchFor(t)),
                 link: true,
-                minSize: const Size(32, 40),
                 builder: (context, hovered) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(

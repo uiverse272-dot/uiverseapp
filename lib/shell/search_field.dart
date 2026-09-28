@@ -142,14 +142,13 @@ class _SearchFieldState extends State<SearchField> {
     final fg = big ? c.text : c.onSignal;
     final showKbd = !big && MediaQuery.sizeOf(context).width >= 1024;
 
-    final field = Container(
-      height: big ? 52 : 40,
+    final box = BoxDecoration(
+      color: big ? c.surface : null,
+      border: Border.all(color: big ? c.border : c.onSignal),
+      boxShadow: _focus.hasFocus ? [hardShadow(3, fg)] : null,
+    );
+    final row = Padding(
       padding: EdgeInsets.symmetric(horizontal: big ? 16 : 12),
-      decoration: BoxDecoration(
-        color: big ? c.surface : null,
-        border: Border.all(color: big ? c.border : c.onSignal),
-        boxShadow: _focus.hasFocus ? [hardShadow(3, fg)] : null,
-      ),
       child: Row(
         children: [
           UiIcon(Ui.search, size: big ? 19 : 18, color: fg),
@@ -187,6 +186,21 @@ class _SearchFieldState extends State<SearchField> {
       ),
     );
 
+    // The compact box is 40 tall but lays out 48 so the field's tap target
+    // meets 48dp (§14); the box is drawn centred in it.
+    final Widget field = big
+        ? Container(height: 52, decoration: box, child: row)
+        : SizedBox(
+            height: 48,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(top: 4, bottom: 4, child: DecoratedBox(decoration: box)),
+                row,
+              ],
+            ),
+          );
+
     return LayoutBuilder(
       builder: (context, box) {
         _width = box.maxWidth;
@@ -212,7 +226,8 @@ class _SearchFieldState extends State<SearchField> {
         link: _link,
         showWhenUnlinked: false,
         targetAnchor: Alignment.bottomLeft,
-        offset: const Offset(0, 6),
+        // 6 below the visible box (the compact box is inset 4 in its 48 layout).
+        offset: Offset(0, widget.big ? 6 : 2),
         child: TapRegion(
           groupId: _tapGroup,
           child: SizedBox(
@@ -237,11 +252,11 @@ class _SearchFieldState extends State<SearchField> {
                       if (chips.isNotEmpty) _readingAs(context, chips),
                       HoverTap(
                         onTap: _submit,
-                        minSize: const Size(double.infinity, 44),
+                        minSize: const Size(double.infinity, 48),
                         builder: (context, hovered) => Container(
                           color: hovered ? c.bgSubtle : null,
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          constraints: const BoxConstraints(minHeight: 44),
+                          constraints: const BoxConstraints(minHeight: 48),
                           alignment: Alignment.centerLeft,
                           child: Row(
                             children: [
