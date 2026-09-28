@@ -186,9 +186,12 @@ class _StickyBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     final c = context.ui;
-    return DecoratedBox(
+    // Container (not DecoratedBox) insets the child by the border, so the
+    // painted height matches [extent].
+    return Container(
+      height: extent,
       decoration: BoxDecoration(color: c.bg, border: Border(bottom: BorderSide(color: c.border))),
-      child: Shell(child: SizedBox(height: extent - 1, child: child)),
+      child: Shell(child: child),
     );
   }
 
