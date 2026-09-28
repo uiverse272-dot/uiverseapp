@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/models.dart';
@@ -88,7 +87,7 @@ Page<void> buildDetailPage(BuildContext context, GoRouterState state, Widget bod
 
 /// The overlay chrome: full-screen sheet on phones; ≥768 a square sheet
 /// (max 1700, 24 margin, L5 shadow) over the scrim. Tapping the scrim, the
-/// close button, Esc or back closes it.
+/// close button, Esc or back closes it (Esc/back pop the route).
 class DetailOverlay extends StatelessWidget {
   const DetailOverlay({super.key, required this.child});
 
@@ -154,12 +153,10 @@ class DetailOverlay extends StatelessWidget {
       );
     }
 
-    return CallbackShortcuts(
-      bindings: {const SingleActivator(LogicalKeyboardKey.escape): () => _close(context)},
-      child: Focus(
-        autofocus: true,
-        child: Material(type: MaterialType.transparency, child: sheet),
-      ),
+    // Esc and Android back pop this route via BackDismissRoot (app.dart).
+    return Focus(
+      autofocus: true,
+      child: Material(type: MaterialType.transparency, child: sheet),
     );
   }
 }

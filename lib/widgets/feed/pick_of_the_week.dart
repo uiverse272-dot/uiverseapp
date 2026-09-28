@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,6 +15,7 @@ import '../../state/pick.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
+import '../core/back_dismiss.dart';
 import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
 import '../save/save_button.dart';
@@ -84,12 +84,10 @@ class _PickOfTheWeekState extends ConsumerState<PickOfTheWeek> {
   Widget build(BuildContext context) {
     if (_mode == _Mode.tab) return _PickTab(onTap: _unfold);
     final open = _mode == _Mode.open;
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.escape): () {
-          if (open) setState(() => _mode = _Mode.card);
-        },
-      },
+    // Esc / back fold the details back into the card (§14).
+    return BackDismiss(
+      active: open,
+      onDismiss: () => setState(() => _mode = _Mode.card),
       child: _PickCard(
         item: widget.item,
         open: open,

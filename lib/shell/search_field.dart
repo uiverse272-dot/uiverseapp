@@ -8,6 +8,7 @@ import '../router/routes.dart';
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
+import '../widgets/core/back_dismiss.dart';
 import '../widgets/core/ui_icon.dart';
 import '../widgets/core/hover_tap.dart';
 
@@ -120,6 +121,14 @@ class _SearchFieldState extends State<SearchField> {
     setState(() {});
   }
 
+  /// Esc / back: close the dropdown and leave the field.
+  void _dismiss() {
+    _blurTimer?.cancel();
+    _focus.unfocus();
+    _focused = false;
+    _sync();
+  }
+
   void _submit() {
     final q = _q.text.trim();
     if (q.isEmpty) return;
@@ -204,12 +213,16 @@ class _SearchFieldState extends State<SearchField> {
     return LayoutBuilder(
       builder: (context, box) {
         _width = box.maxWidth;
-        return CompositedTransformTarget(
-          link: _link,
-          child: OverlayPortal(
-            controller: _portal,
-            overlayChildBuilder: _dropdown,
-            child: field,
+        return BackDismiss(
+          active: _portal.isShowing,
+          onDismiss: _dismiss,
+          child: CompositedTransformTarget(
+            link: _link,
+            child: OverlayPortal(
+              controller: _portal,
+              overlayChildBuilder: _dropdown,
+              child: field,
+            ),
           ),
         );
       },

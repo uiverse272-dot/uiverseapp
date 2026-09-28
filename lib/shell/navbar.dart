@@ -8,6 +8,7 @@ import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
 import '../widgets/core/ui_icon.dart';
+import '../widgets/core/back_dismiss.dart';
 import '../widgets/core/hover_tap.dart';
 import 'nav_items.dart';
 import 'rail.dart';
@@ -212,27 +213,31 @@ class _MoreMenuState extends State<_MoreMenu> {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    return TapRegion(
-      groupId: _group,
-      child: CompositedTransformTarget(
-        link: _link,
-        child: OverlayPortal(
-          controller: _portal,
-          overlayChildBuilder: _menu,
-          child: HoverTap(
-            onTap: _toggle,
-            expanded: _portal.isShowing,
-            builder: (context, hovered) => Container(
-              color: hovered ? c.bgSubtle : null,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('More', style: UiText.body.copyWith(color: c.text)),
-                  const SizedBox(width: 8),
-                  UiIcon(Ui.chevron, size: 14, color: c.text),
-                ],
+    return BackDismiss(
+      active: _portal.isShowing,
+      onDismiss: _close,
+      child: TapRegion(
+        groupId: _group,
+        child: CompositedTransformTarget(
+          link: _link,
+          child: OverlayPortal(
+            controller: _portal,
+            overlayChildBuilder: _menu,
+            child: HoverTap(
+              onTap: _toggle,
+              expanded: _portal.isShowing,
+              builder: (context, hovered) => Container(
+                color: hovered ? c.bgSubtle : null,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('More', style: UiText.body.copyWith(color: c.text)),
+                    const SizedBox(width: 8),
+                    UiIcon(Ui.chevron, size: 14, color: c.text),
+                  ],
+                ),
               ),
             ),
           ),

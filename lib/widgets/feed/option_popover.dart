@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../data/taxonomy.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
+import '../core/back_dismiss.dart';
 import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
 
@@ -129,70 +129,69 @@ class _OptionPopoverState extends State<OptionPopover> {
       ),
     );
 
-    return OverlayPortal(
-      controller: _portal,
-      overlayChildBuilder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: Semantics(
-              label: 'Close',
-              button: true,
-              child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: _close),
-            ),
-          ),
-          CompositedTransformFollower(
-            link: _link,
-            showWhenUnlinked: false,
-            // Trigger is 32 tall inside a 48 hit box: 36 below its top = 4 below its bottom.
-            targetAnchor: _alignRight ? Alignment.bottomRight : Alignment.bottomLeft,
-            followerAnchor: _alignRight ? Alignment.topRight : Alignment.topLeft,
-            offset: const Offset(0, -4),
-            child: Align(
-              alignment: _alignRight ? Alignment.topRight : Alignment.topLeft,
-              widthFactor: 1,
-              heightFactor: 1,
-              child: _Panel(
-                onClose: _close,
-                child: OptionList(options: widget.options, selected: widget.selected, onPick: _pick),
+    return BackDismiss(
+      active: _portal.isShowing,
+      onDismiss: _close,
+      child: OverlayPortal(
+        controller: _portal,
+        overlayChildBuilder: (context) => Stack(
+          children: [
+            Positioned.fill(
+              child: Semantics(
+                label: 'Close',
+                button: true,
+                child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: _close),
               ),
             ),
-          ),
-        ],
+            CompositedTransformFollower(
+              link: _link,
+              showWhenUnlinked: false,
+              // Trigger is 32 tall inside a 48 hit box: 36 below its top = 4 below its bottom.
+              targetAnchor: _alignRight ? Alignment.bottomRight : Alignment.bottomLeft,
+              followerAnchor: _alignRight ? Alignment.topRight : Alignment.topLeft,
+              offset: const Offset(0, -4),
+              child: Align(
+                alignment: _alignRight ? Alignment.topRight : Alignment.topLeft,
+                widthFactor: 1,
+                heightFactor: 1,
+                child: _Panel(
+                  child: OptionList(options: widget.options, selected: widget.selected, onPick: _pick),
+                ),
+              ),
+            ),
+          ],
+        ),
+        child: CompositedTransformTarget(link: _link, child: trigger),
       ),
-      child: CompositedTransformTarget(link: _link, child: trigger),
     );
   }
 }
 
 /// Anchored popover panel: 224 wide, max 320 tall, surface, border, L3
-/// shadow, fades in; Esc closes.
+/// shadow, fades in. Esc / back close it via [BackDismiss].
 class _Panel extends StatelessWidget {
-  const _Panel({required this.child, required this.onClose});
+  const _Panel({required this.child});
 
   final Widget child;
-  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    return CallbackShortcuts(
-      bindings: {const SingleActivator(LogicalKeyboardKey.escape): onClose},
-      child: Focus(
-        autofocus: true,
-        child: TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0, end: 1),
-          duration: motion(context, kFadeIn),
-          builder: (context, t, child) => Opacity(opacity: t, child: child),
-          child: Container(
-            width: kPopoverWidth,
-            constraints: const BoxConstraints(maxHeight: kPopoverMaxHeight),
-            decoration: BoxDecoration(
-              color: c.surface,
-              border: Border.all(color: c.border),
-              boxShadow: [hardShadow(Lift.l3, c.border)],
-            ),
-            child: SingleChildScrollView(child: child),
+    return Focus(
+      autofocus: true,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0, end: 1),
+        duration: motion(context, kFadeIn),
+        builder: (context, t, child) => Opacity(opacity: t, child: child),
+        child: Container(
+          width: kPopoverWidth,
+          constraints: const BoxConstraints(maxHeight: kPopoverMaxHeight),
+          decoration: BoxDecoration(
+            color: c.surface,
+            border: Border.all(color: c.border),
+            boxShadow: [hardShadow(Lift.l3, c.border)],
           ),
+          child: SingleChildScrollView(child: child),
         ),
       ),
     );
