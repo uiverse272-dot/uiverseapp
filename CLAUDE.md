@@ -1,0 +1,37 @@
+# Uiverse — Flutter app
+
+Flutter port of the Uiverse web app (Android + iOS). Visual source of truth: `design-system.md` (cited as §N).
+Web source (read-only reference, port from here): `C:\Users\LENOVO\Documents\Other Projects\uiverse\uiverse`
+— `src/lib/*` (data), `src/components/**` (UI), `src/app/(app)/**` (screens), `src/components/mock/**` (preview renderer).
+
+Where doc and web code disagree: **code wins for data**, **doc wins for visuals**.
+
+## Stack
+- Flutter 3.47, Dart 3.13. Riverpod 3 (`flutter_riverpod`), `go_router`, `shared_preferences`, `flutter_svg`.
+- Fonts bundled: `SpaceMono` (400/700, default), `Lexend` (card titles only). No `google_fonts`.
+- No new packages without asking the orchestrator (note it in your report).
+
+## Shared foundation (do not edit unless you own it)
+- `lib/theme/uiverse_colors.dart` — `UiverseColors` ThemeExtension; `context.ui.bg/.surface/.border/.text2/.accent/...`; `UiverseColors.ink`, `.paperBadge` fixed colours.
+- `lib/theme/uiverse_text.dart` — `UiText.pageTitle/.sectionHead/.body/.chip/.caption/.meta/...`, `UiText.mono(size, bold:, height:, track:)`, `UiText.tabular`. Styles have no colour: `.copyWith(color: context.ui.text2)`.
+- `lib/theme/motion.dart` — `kDur kEase kTransition kFadeUp kFadeIn kSheet`, `Lift.l1..l5`, `hardShadow(d, color)`, `motion(context, d)` (reduced-motion aware), `Bp.sm/md/lg/xl`.
+- `lib/theme/uiverse_theme.dart` — `uiverseTheme(Brightness)`.
+- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `Hit48` (48dp hit area), `LogoMark(size:)`.
+- `lib/data/models.dart` — `Item, Source, Palette, Block, Crop, ArchetypeDef`, enums `Archetype(.slug)`, `Kind`, `Device`, `Viewport(.w/.h/.label/.pick)`, `Tier`.
+
+## Rules
+- Square corners, 1px ink borders, hard offset shadows only. Never Material ripples/elevation; custom widgets over Material nav/chips.
+- Strict analysis (see `analysis_options.yaml`). Explicit return types on public API. No `dynamic` without a comment.
+- Tests in `test/` mirroring `lib/`. Unit tests for logic; widget tests by text/semantics. No whole-tree goldens.
+- Conventional Commits, small, one logical unit each.
+- Only edit directories you own (given in your brief). Need a shared change? Describe it in your final report.
+- Done = `flutter analyze` clean + `flutter test` green.
+
+## Data parity (captured from web)
+- `ITEMS.length == 181` (68 screens, 113 components).
+- First items: `s001-ledgerly-homepage` saves 3747 views 43984 daysAgo 105 hasCode premium aspect 0.4675324675324675;
+  `c0011-ledgerly-navbar` 2360/35826/19 crop {y:0,h:0.125}; `c0012-ledgerly-cards` 748/4950/112;
+  `c0013-ledgerly-cta` 2561/23688/33; `s002-ledgerly-spend-overview` 4150/16053/140 free aspect 1.5.
+- `parseQuery("dark fintech dashboard")` → Style:dark, Industry:fintech, Type(category):dashboard, residual "".
+- `searchItems` same query → 5 results: s002-ledgerly-spend-overview, s036-current-accounts, c0361-current-stats, c0021-ledgerly-stats, c0022-ledgerly-table.
+- `compact`: 842→"842", 1234→"1.2k", 12345→"12k", 1234567→"1.2M".
