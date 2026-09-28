@@ -53,6 +53,10 @@ class _HoverTapState extends State<HoverTap> {
       selected: widget.selected,
       toggled: widget.toggled,
       expanded: widget.expanded,
+      // With a label the child's semantics (including the GestureDetector's
+      // tap action) are excluded, so re-expose the tap here. Without one the
+      // detector's own action merges into this node.
+      onTap: widget.label != null ? widget.onTap : null,
       excludeSemantics: widget.label != null,
       child: FocusableActionDetector(
         enabled: widget.onTap != null,
