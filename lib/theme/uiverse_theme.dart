@@ -36,7 +36,7 @@ ThemeData uiverseTheme(Brightness b) {
     focusColor: c.focus,
     materialTapTargetSize: MaterialTapTargetSize.padded,
     textSelectionTheme: TextSelectionThemeData(
-      selectionColor: c.signal,
+      selectionColor: selectionColor(b),
       cursorColor: c.text,
       selectionHandleColor: c.accent,
     ),
@@ -93,3 +93,12 @@ ThemeData uiverseTheme(Brightness b) {
     ),
   );
 }
+
+/// Text selection background (§14): `signal`, with the selected text in
+/// `on-signal`. Flutter paints the selection under unchanged text colour, so
+/// in light mode (ink text) solid signal matches the web; in dark mode the
+/// light text would sit on solid yellow at ~1.3:1, so the signal is laid at
+/// 40% over the dark surface instead (text stays ≥ 4.5:1).
+Color selectionColor(Brightness b) => b == Brightness.light
+    ? UiverseColors.light.signal
+    : UiverseColors.dark.signal.withValues(alpha: 0.4);

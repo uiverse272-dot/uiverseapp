@@ -163,22 +163,29 @@ class _SearchFieldState extends State<SearchField> {
           UiIcon(Ui.search, size: big ? 19 : 18, color: fg),
           const SizedBox(width: 10),
           Expanded(
-            child: TextField(
-              controller: _q,
-              focusNode: _focus,
-              groupId: _tapGroup,
-              onTapOutside: (_) => _focus.unfocus(),
-              onSubmitted: (_) => _submit(),
-              textInputAction: TextInputAction.search,
-              style: UiText.mono(big ? 15 : 13, color: fg),
-              cursorColor: fg,
-              decoration: InputDecoration.collapsed(
-                hintText: big
-                    ? 'Try: ${kSearchExamples[_example]}'
-                    : 'Site, component, style, or industry',
-                hintStyle: UiText.mono(
-                  big ? 15 : 13,
-                  color: big ? c.text3 : c.onSignal.withValues(alpha: 0.7),
+            // The compact field sits on the signal-yellow cell, where the
+            // signal selection colour would be invisible; tint with ink instead.
+            child: TextSelectionTheme(
+              data: big
+                  ? TextSelectionTheme.of(context)
+                  : TextSelectionTheme.of(context).copyWith(selectionColor: c.onSignal.withValues(alpha: 0.25)),
+              child: TextField(
+                controller: _q,
+                focusNode: _focus,
+                groupId: _tapGroup,
+                onTapOutside: (_) => _focus.unfocus(),
+                onSubmitted: (_) => _submit(),
+                textInputAction: TextInputAction.search,
+                style: UiText.mono(big ? 15 : 13, color: fg),
+                cursorColor: fg,
+                decoration: InputDecoration.collapsed(
+                  hintText: big
+                      ? 'Try: ${kSearchExamples[_example]}'
+                      : 'Site, component, style, or industry',
+                  hintStyle: UiText.mono(
+                    big ? 15 : 13,
+                    color: big ? c.text3 : c.onSignal.withValues(alpha: 0.7),
+                  ),
                 ),
               ),
             ),
