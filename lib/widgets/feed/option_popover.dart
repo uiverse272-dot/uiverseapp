@@ -81,8 +81,11 @@ class _OptionPopoverState extends State<OptionPopover> {
 
   Future<void> _openSheet() async {
     final c = context.ui;
+    // anim-sheet timing; zero under reduced motion (§6).
+    final d = motion(context, kSheet);
     final slug = await showModalBottomSheet<String>(
       context: context,
+      sheetAnimationStyle: AnimationStyle(duration: d, reverseDuration: d),
       backgroundColor: Colors.transparent,
       elevation: 0,
       shape: const RoundedRectangleBorder(),
