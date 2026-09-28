@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:uiverse/detail/detail_screen.dart';
 import 'package:uiverse/dev/mock_gallery.dart';
 import 'package:uiverse/data/models.dart';
 import 'package:uiverse/router/detail.dart';
@@ -27,8 +28,6 @@ void main() {
     '/upload': 'upload',
     '/u/me': 'user',
     '/legal/takedown': 'legal',
-    '/screen/s001-ledgerly-homepage': 'screen',
-    '/component/c0011-ledgerly-navbar': 'component',
   };
 
   for (final e in paths.entries) {
@@ -62,8 +61,8 @@ void main() {
   });
 
   testWidgets('deep-linked detail is a plain page in the shell', (tester) async {
-    await pumpApp(tester, width: 1024, location: '/screen/s001');
-    expect(find.text('screen'), findsOneWidget);
+    await pumpApp(tester, width: 1024, location: '/screen/s001-ledgerly-homepage');
+    expect(find.byType(DetailScreen), findsOneWidget);
     expect(find.byType(Rail), findsOneWidget);
     expect(find.byType(DetailOverlay), findsNothing);
   });
@@ -71,13 +70,13 @@ void main() {
   testWidgets('openDetail on a tablet overlays the feed; scrim tap closes', (tester) async {
     final app = await pumpApp(tester, width: 1024);
     final ctx = tester.element(find.text('home'));
-    openDetailSlug(ctx, Kind.component, 'c0011').ignore();
+    openDetailSlug(ctx, Kind.component, 'c0011-ledgerly-navbar').ignore();
     await tester.pumpAndSettle();
 
     expect(find.byType(DetailOverlay), findsOneWidget);
-    expect(find.text('component'), findsOneWidget);
+    expect(find.byType(DetailScreen), findsOneWidget);
     expect(find.text('home'), findsOneWidget); // feed stays underneath
-    expect(app.router.state.uri.path, '/component/c0011');
+    expect(app.router.state.uri.path, '/component/c0011-ledgerly-navbar');
     expect(find.bySemanticsLabel('Close'), findsWidgets);
 
     await tester.tapAt(const Offset(5, 450)); // scrim margin, outside the sheet
@@ -88,11 +87,11 @@ void main() {
 
   testWidgets('openDetail on a phone is a full-screen page with a close button', (tester) async {
     await pumpApp(tester, width: 390);
-    openDetailSlug(tester.element(find.text('home')), Kind.screen, 's001').ignore();
+    openDetailSlug(tester.element(find.text('home')), Kind.screen, 's001-ledgerly-homepage').ignore();
     await tester.pumpAndSettle();
     expect(find.byType(DetailOverlay), findsOneWidget);
-    expect(find.text('screen'), findsOneWidget);
-    await tester.tap(find.bySemanticsLabel('Close'));
+    expect(find.byType(DetailScreen), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Close').last);
     await tester.pumpAndSettle();
     expect(find.byType(DetailOverlay), findsNothing);
     expect(find.text('home'), findsOneWidget);

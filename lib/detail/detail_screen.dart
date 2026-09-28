@@ -454,7 +454,7 @@ class _Rail extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        SaveButton(item.slug, variant: SaveButtonVariant.solid),
+        SaveButton(item.slug, variant: SaveButtonVariant.solid, expand: true),
         const SizedBox(height: 12),
         _ActionTrio(
           onPrompt: onPrompt,

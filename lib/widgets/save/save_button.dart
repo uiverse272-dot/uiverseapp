@@ -13,10 +13,13 @@ enum SaveButtonVariant { icon, solid, inline }
 
 /// Bookmark toggle (§10.3). Toggling always shows the save toast.
 class SaveButton extends ConsumerWidget {
-  const SaveButton(this.slug, {super.key, this.variant = SaveButtonVariant.icon});
+  const SaveButton(this.slug, {super.key, this.variant = SaveButtonVariant.icon, this.expand = false});
 
   final String slug;
   final SaveButtonVariant variant;
+
+  /// Solid variant only: fill the available width (detail rail, §10.9).
+  final bool expand;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,6 +49,7 @@ class SaveButton extends ConsumerWidget {
             final bg = saved ? (hovered ? c.bgSubtle : c.surface) : c.accent;
             return AnimatedContainer(
               duration: motion(context, kTransition),
+              width: expand ? double.infinity : null,
               height: 44,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(color: bg, border: Border.all(color: c.border)),

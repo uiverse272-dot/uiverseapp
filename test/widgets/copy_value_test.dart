@@ -4,7 +4,7 @@ import 'package:uiverse/theme/uiverse_theme.dart';
 import 'package:uiverse/widgets/copy_value.dart';
 import 'package:uiverse/widgets/core/ui_icon.dart';
 
-import '../detail/clipboard_mock.dart';
+import '../support/clipboard_mock.dart';
 
 void main() {
   late FakeClipboard clipboard;

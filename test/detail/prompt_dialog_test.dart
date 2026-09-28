@@ -6,7 +6,7 @@ import 'package:uiverse/data/prompt.dart';
 import 'package:uiverse/detail/prompt_dialog.dart';
 import 'package:uiverse/state/prompt_quota.dart';
 
-import 'clipboard_mock.dart';
+import '../support/clipboard_mock.dart';
 import 'detail_harness.dart';
 
 void main() {

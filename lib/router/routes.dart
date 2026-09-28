@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../detail/detail_screen.dart';
 import '../dev/mock_gallery.dart';
 import 'stub_page.dart';
 
@@ -88,8 +89,7 @@ Widget buildRoute(AppRoute route, BuildContext context, GoRouterState state) => 
       AppRoute.web => StubPage.of(route, state),
       AppRoute.apps => StubPage.of(route, state),
       AppRoute.components => StubPage.of(route, state),
-      AppRoute.screen => StubPage.of(route, state, scrolls: false),
-      AppRoute.component => StubPage.of(route, state, scrolls: false),
+      AppRoute.screen || AppRoute.component => DetailScreen(slug: state.pathParameters['slug']!),
       AppRoute.search => StubPage.of(route, state),
       AppRoute.saved => StubPage.of(route, state),
       AppRoute.palettes => StubPage.of(route, state),

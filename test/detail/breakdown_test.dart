@@ -3,7 +3,7 @@ import 'package:uiverse/data/catalog.dart';
 import 'package:uiverse/data/spec.dart';
 import 'package:uiverse/detail/breakdown.dart';
 
-import 'clipboard_mock.dart';
+import '../support/clipboard_mock.dart';
 import 'detail_harness.dart';
 
 void main() {
