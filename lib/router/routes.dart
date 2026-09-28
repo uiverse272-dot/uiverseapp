@@ -1,8 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/models.dart';
 import '../detail/detail_screen.dart';
 import '../dev/mock_gallery.dart';
+import '../screens/feeds/feed_screen.dart';
+import '../screens/home/home_screen.dart';
+import '../widgets/feed/feed_card.dart';
 import 'stub_page.dart';
 
 /// Path constants and builders for every §12 screen.
@@ -84,17 +88,17 @@ List<String> facetsOf(GoRouterState state) {
 /// can read `DetailPresentation.of(context)` and must not scroll themselves
 /// (both presentations wrap them in a scroll view).
 Widget buildRoute(AppRoute route, BuildContext context, GoRouterState state) => switch (route) {
-      AppRoute.home => StubPage.of(route, state),
+      AppRoute.home => HomeScreen(chip: state.uri.queryParameters['chip']),
       AppRoute.explore => StubPage.of(route, state),
-      AppRoute.web => StubPage.of(route, state),
-      AppRoute.apps => StubPage.of(route, state),
-      AppRoute.components => StubPage.of(route, state),
-      AppRoute.screen || AppRoute.component => DetailScreen(slug: state.pathParameters['slug']!),
+      AppRoute.web => WebFeedScreen(facets: facetsOf(state), query: state.uri.queryParameters),
+      AppRoute.apps => AppsFeedScreen(facets: facetsOf(state), query: state.uri.queryParameters),
+      AppRoute.components => ComponentsFeedScreen(facets: facetsOf(state), query: state.uri.queryParameters),
+      AppRoute.screen || AppRoute.component => DetailScreen(slug: state.pathParameters['slug']!, cardBuilder: (_, Item i) => FeedCard(i)),
       AppRoute.search => StubPage.of(route, state),
       AppRoute.saved => StubPage.of(route, state),
       AppRoute.palettes => StubPage.of(route, state),
       AppRoute.layouts => StubPage.of(route, state),
-      AppRoute.threeD => StubPage.of(route, state),
+      AppRoute.threeD => ThreeDFeedScreen(query: state.uri.queryParameters),
       AppRoute.creators => StubPage.of(route, state),
       AppRoute.source => StubPage.of(route, state),
       AppRoute.pricing => StubPage.of(route, state),

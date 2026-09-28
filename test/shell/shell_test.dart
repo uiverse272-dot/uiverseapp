@@ -32,14 +32,16 @@ void main() {
 
   testWidgets('active nav item: / exact, others by prefix', (tester) async {
     final handle = tester.ensureSemantics();
+    // Home's category chips also say "Web"; look only in the rail.
+    Finder inRail(String label) => find.descendant(of: find.byType(Rail), matching: find.text(label));
     final app = await pumpApp(tester, width: 1024, location: '/web/saas/dark');
-    expect(tester.getSemantics(find.text('Web')), isSemantics(isSelected: true, isLink: true));
-    expect(tester.getSemantics(find.text('Home')), isNot(isSemantics(isSelected: true)));
+    expect(tester.getSemantics(inRail('Web')), isSemantics(isSelected: true, isLink: true));
+    expect(tester.getSemantics(inRail('Home')), isNot(isSemantics(isSelected: true)));
 
     app.router.go('/');
     await tester.pumpAndSettle();
-    expect(tester.getSemantics(find.text('Home')), isSemantics(isSelected: true));
-    expect(tester.getSemantics(find.text('Web')), isNot(isSemantics(isSelected: true)));
+    expect(tester.getSemantics(inRail('Home')), isSemantics(isSelected: true));
+    expect(tester.getSemantics(inRail('Web')), isNot(isSemantics(isSelected: true)));
     handle.dispose();
   });
 
@@ -67,7 +69,7 @@ void main() {
   });
 
   testWidgets('More menu lists 3D, Creators, Pricing, Upload and navigates', (tester) async {
-    await pumpApp(tester, width: 1280);
+    await pumpApp(tester, width: 1280, location: '/explore');
     await tester.tap(find.text('More'));
     await tester.pumpAndSettle();
     for (final l in ['3D', 'Creators', 'Pricing']) {

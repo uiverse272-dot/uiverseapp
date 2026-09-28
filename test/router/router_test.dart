@@ -5,6 +5,8 @@ import 'package:uiverse/dev/mock_gallery.dart';
 import 'package:uiverse/data/models.dart';
 import 'package:uiverse/router/detail.dart';
 import 'package:uiverse/router/routes.dart';
+import 'package:uiverse/screens/feeds/feed_screen.dart';
+import 'package:uiverse/screens/home/home_screen.dart';
 import 'package:uiverse/shell/bottom_nav.dart';
 import 'package:uiverse/shell/rail.dart';
 
@@ -12,16 +14,11 @@ import '../shell/app_harness.dart';
 
 void main() {
   const paths = {
-    '/': 'home',
     '/explore': 'explore',
-    '/web': 'web',
-    '/apps': 'apps',
-    '/components': 'components',
     '/search': 'search',
     '/saved': 'saved',
     '/palettes': 'palettes',
     '/layouts': 'layouts',
-    '/3d': 'threeD',
     '/creators': 'creators',
     '/source/ledgerly': 'source',
     '/pricing': 'pricing',
@@ -37,10 +34,31 @@ void main() {
     });
   }
 
-  testWidgets('facet paths resolve to the feed with facets', (tester) async {
-    await pumpApp(tester, location: '/web/saas/dark');
-    expect(find.text('web'), findsOneWidget);
-    expect(find.text('facets: saas/dark'), findsOneWidget);
+  const screens = <String, Type>{
+    '/': HomeScreen,
+    '/web': WebFeedScreen,
+    '/apps': AppsFeedScreen,
+    '/components': ComponentsFeedScreen,
+    '/3d': ThreeDFeedScreen,
+  };
+
+  for (final e in screens.entries) {
+    testWidgets('${e.key} builds ${e.value}', (tester) async {
+      await pumpApp(tester, location: e.key);
+      expect(find.byType(e.value), findsOneWidget);
+    });
+  }
+
+  testWidgets('facet paths and query reach the feed', (tester) async {
+    await pumpApp(tester, location: '/web/saas/dark?device=mobile');
+    final web = tester.widget<WebFeedScreen>(find.byType(WebFeedScreen));
+    expect(web.facets, ['saas', 'dark']);
+    expect(web.query, {'device': 'mobile'});
+  });
+
+  testWidgets('?chip= reaches the home screen', (tester) async {
+    await pumpApp(tester, location: '/?chip=dark');
+    expect(tester.widget<HomeScreen>(find.byType(HomeScreen)).chip, 'dark');
   });
 
   testWidgets('path and query params reach the screen', (tester) async {
@@ -68,33 +86,33 @@ void main() {
   });
 
   testWidgets('openDetail on a tablet overlays the feed; scrim tap closes', (tester) async {
-    final app = await pumpApp(tester, width: 1024);
-    final ctx = tester.element(find.text('home'));
+    final app = await pumpApp(tester, width: 1024, location: '/explore');
+    final ctx = tester.element(find.text('explore'));
     openDetailSlug(ctx, Kind.component, 'c0011-ledgerly-navbar').ignore();
     await tester.pumpAndSettle();
 
     expect(find.byType(DetailOverlay), findsOneWidget);
     expect(find.byType(DetailScreen), findsOneWidget);
-    expect(find.text('home'), findsOneWidget); // feed stays underneath
+    expect(find.text('explore'), findsOneWidget); // page stays underneath
     expect(app.router.state.uri.path, '/component/c0011-ledgerly-navbar');
     expect(find.bySemanticsLabel('Close'), findsWidgets);
 
     await tester.tapAt(const Offset(5, 450)); // scrim margin, outside the sheet
     await tester.pumpAndSettle();
     expect(find.byType(DetailOverlay), findsNothing);
-    expect(app.router.state.uri.path, '/');
+    expect(app.router.state.uri.path, '/explore');
   });
 
   testWidgets('openDetail on a phone is a full-screen page with a close button', (tester) async {
-    await pumpApp(tester, width: 390);
-    openDetailSlug(tester.element(find.text('home')), Kind.screen, 's001-ledgerly-homepage').ignore();
+    await pumpApp(tester, width: 390, location: '/explore');
+    openDetailSlug(tester.element(find.text('explore')), Kind.screen, 's001-ledgerly-homepage').ignore();
     await tester.pumpAndSettle();
     expect(find.byType(DetailOverlay), findsOneWidget);
     expect(find.byType(DetailScreen), findsOneWidget);
     await tester.tap(find.bySemanticsLabel('Close').last);
     await tester.pumpAndSettle();
     expect(find.byType(DetailOverlay), findsNothing);
-    expect(find.text('home'), findsOneWidget);
+    expect(find.text('explore'), findsOneWidget);
   });
 
   test('Routes helpers', () {
