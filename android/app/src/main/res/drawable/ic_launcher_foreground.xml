@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The U mark from the web icon.svg (32-unit viewBox) scaled 2x and
+     centred in the 108dp adaptive-icon canvas (66dp safe zone). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="2"
+        android:scaleY="2"
+        android:translateX="22"
+        android:translateY="22">
+        <path
+            android:pathData="M9,7v11a7,7 0,0 0,14 0V7"
+            android:strokeColor="#1c1b18"
+            android:strokeWidth="4.5"
+            android:strokeLineCap="square" />
+        <path
+            android:pathData="M13,17.5a3,3 0,1 0,6 0a3,3 0,1 0,-6 0"
+            android:fillColor="#f8dc3d"
+            android:strokeColor="#1c1b18"
+            android:strokeWidth="1.5" />
+    </group>
+</vector>
