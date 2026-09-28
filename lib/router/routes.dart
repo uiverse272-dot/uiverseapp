@@ -4,10 +4,20 @@ import 'package:go_router/go_router.dart';
 import '../data/models.dart';
 import '../detail/detail_screen.dart';
 import '../dev/mock_gallery.dart';
+import '../screens/creators/creators_screen.dart';
+import '../screens/explore/explore_screen.dart';
 import '../screens/feeds/feed_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/layouts/layouts_screen.dart';
+import '../screens/legal/legal_screen.dart';
+import '../screens/palettes/palettes_screen.dart';
+import '../screens/pricing/pricing_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/saved/saved_screen.dart';
+import '../screens/search/search_screen.dart';
+import '../screens/source/source_screen.dart';
+import '../screens/upload/upload_screen.dart';
 import '../widgets/feed/feed_card.dart';
-import 'stub_page.dart';
 
 /// Path constants and builders for every §12 screen.
 abstract final class Routes {
@@ -89,21 +99,21 @@ List<String> facetsOf(GoRouterState state) {
 /// (both presentations wrap them in a scroll view).
 Widget buildRoute(AppRoute route, BuildContext context, GoRouterState state) => switch (route) {
       AppRoute.home => HomeScreen(chip: state.uri.queryParameters['chip']),
-      AppRoute.explore => StubPage.of(route, state),
+      AppRoute.explore => const ExploreScreen(),
       AppRoute.web => WebFeedScreen(facets: facetsOf(state), query: state.uri.queryParameters),
       AppRoute.apps => AppsFeedScreen(facets: facetsOf(state), query: state.uri.queryParameters),
       AppRoute.components => ComponentsFeedScreen(facets: facetsOf(state), query: state.uri.queryParameters),
       AppRoute.screen || AppRoute.component => DetailScreen(slug: state.pathParameters['slug']!, cardBuilder: (_, Item i) => FeedCard(i)),
-      AppRoute.search => StubPage.of(route, state),
-      AppRoute.saved => StubPage.of(route, state),
-      AppRoute.palettes => StubPage.of(route, state),
-      AppRoute.layouts => StubPage.of(route, state),
+      AppRoute.search => SearchScreen(query: state.uri.queryParameters),
+      AppRoute.saved => SavedScreen(query: state.uri.queryParameters),
+      AppRoute.palettes => const PalettesScreen(),
+      AppRoute.layouts => const LayoutsScreen(),
       AppRoute.threeD => ThreeDFeedScreen(query: state.uri.queryParameters),
-      AppRoute.creators => StubPage.of(route, state),
-      AppRoute.source => StubPage.of(route, state),
-      AppRoute.pricing => StubPage.of(route, state),
-      AppRoute.upload => StubPage.of(route, state),
-      AppRoute.user => StubPage.of(route, state),
-      AppRoute.legal => StubPage.of(route, state),
+      AppRoute.creators => const CreatorsScreen(),
+      AppRoute.source => SourceScreen(slug: state.pathParameters['slug']!, query: state.uri.queryParameters),
+      AppRoute.pricing => const PricingScreen(),
+      AppRoute.upload => const UploadScreen(),
+      AppRoute.user => ProfileScreen(handle: state.pathParameters['handle']!),
+      AppRoute.legal => LegalScreen(doc: state.pathParameters['doc']!),
       AppRoute.devMock => const MockGalleryPage(),
     };

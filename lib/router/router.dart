@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../screens/profile/profile_screen.dart';
 import '../shell/app_shell.dart';
 import 'detail.dart';
 import 'not_found_page.dart';
@@ -26,6 +27,10 @@ GoRouter createRouter({String initialLocation = Routes.home}) {
   GoRoute screen(AppRoute r, {List<RouteBase> routes = const []}) => GoRoute(
         path: r.path,
         name: r.name,
+        // A handle that is a known source goes to its source page.
+        redirect: r == AppRoute.user
+            ? (context, state) => profileRedirect(state.pathParameters['handle']!)
+            : null,
         pageBuilder: (context, state) =>
             NoTransitionPage<void>(key: state.pageKey, child: buildRoute(r, context, state)),
         routes: routes,

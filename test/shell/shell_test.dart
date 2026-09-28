@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:uiverse/screens/explore/explore_screen.dart';
+import 'package:uiverse/screens/pricing/pricing_screen.dart';
+import 'package:uiverse/screens/search/search_screen.dart';
 import 'package:uiverse/shell/bottom_nav.dart';
 import 'package:uiverse/shell/nav_items.dart';
 import 'package:uiverse/shell/rail.dart';
@@ -56,7 +59,7 @@ void main() {
     await pumpApp(tester);
     await tester.tap(find.text('Explore'));
     await tester.pumpAndSettle();
-    expect(find.text('explore'), findsOneWidget); // stub page title
+    expect(find.byType(ExploreScreen), findsOneWidget);
   });
 
   testWidgets('saved cell shows count badge, capped at 99+', (tester) async {
@@ -69,7 +72,7 @@ void main() {
   });
 
   testWidgets('More menu lists 3D, Creators, Pricing, Upload and navigates', (tester) async {
-    await pumpApp(tester, width: 1280, location: '/explore');
+    await pumpApp(tester, width: 1280, location: '/legal/takedown');
     await tester.tap(find.text('More'));
     await tester.pumpAndSettle();
     for (final l in ['3D', 'Creators', 'Pricing']) {
@@ -77,8 +80,8 @@ void main() {
     }
     await tester.tap(find.text('Pricing'));
     await tester.pumpAndSettle();
-    expect(find.text('pricing'), findsOneWidget);
-    expect(find.text('Creators'), findsNothing);
+    expect(find.byType(PricingScreen), findsOneWidget);
+    expect(find.text('Creators'), findsNothing); // menu closed
   });
 
   testWidgets('theme toggle flips the shown theme and persists', (tester) async {
@@ -105,7 +108,7 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
     expect(app.router.state.uri.toString(), '/search?q=dark+fintech');
-    expect(find.text('q: dark fintech'), findsOneWidget);
+    expect(tester.widget<SearchScreen>(find.byType(SearchScreen)).query, {'q': 'dark fintech'});
   });
 }
 
