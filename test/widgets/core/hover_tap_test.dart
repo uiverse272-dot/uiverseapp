@@ -19,7 +19,7 @@ void main() {
     )));
     final node = tester.getSemantics(find.bySemanticsLabel('Close'));
     expect(node, isSemantics(isButton: true, hasTapAction: true));
-    tester.binding.pipelineOwner.semanticsOwner!.performAction(node.id, SemanticsAction.tap);
+    node.owner!.performAction(node.id, SemanticsAction.tap);
     expect(taps, 1);
     h.dispose();
   });
