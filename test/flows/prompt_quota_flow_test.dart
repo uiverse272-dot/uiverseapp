@@ -73,10 +73,6 @@ void main() {
 
   testWidgets(
     'a month rollover while the app is running unlocks the quota',
-    // testWidgets takes `bool skip`, so the reason lives here.
-    // BUG: promptQuotaProvider never re-reads the clock, so it stays locked
-    // after a month rollover until the app restarts.
-    skip: true,
     (tester) async {
       DateTime now = DateTime.utc(2026, 9, 30, 12);
       await pumpFlowApp(tester, width: 1024, location: kDetail, clock: () => now);

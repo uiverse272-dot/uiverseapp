@@ -24,6 +24,8 @@ const Duration kPromptCopiedFor = Duration(milliseconds: 1400);
 /// Opens the implementation-prompt generator for [item] (§10.13): full screen
 /// on phones, otherwise a centred square sheet over the `overlay` scrim.
 Future<void> showPromptDialog(BuildContext context, Item item) {
+  // The month may have rolled over since the quota was last read.
+  ProviderScope.containerOf(context, listen: false).read(promptQuotaProvider.notifier).refresh();
   final d = motion(context, kSheet);
   return showGeneralDialog<void>(
     context: context,
@@ -117,6 +119,7 @@ class _PromptDialogState extends ConsumerState<PromptDialog> {
   }
 
   Future<void> _copy() async {
+    final quota = ref.read(promptQuotaProvider.notifier)..refresh();
     if (ref.read(promptQuotaProvider).locked) return;
     try {
       await Clipboard.setData(ClipboardData(text: _text.text));
@@ -125,7 +128,7 @@ class _PromptDialogState extends ConsumerState<PromptDialog> {
       return;
     }
     if (!mounted) return;
-    ref.read(promptQuotaProvider.notifier).consume();
+    quota.consume();
     _timer?.cancel();
     setState(() => _copied = true);
     _timer = Timer(kPromptCopiedFor, () {
