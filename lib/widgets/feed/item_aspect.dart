@@ -1,0 +1,32 @@
+import '../../data/models.dart';
+
+/// [item] with its preview aspect replaced (web `{ ...item, aspect: crop }`),
+/// used to render a fixed-crop plate.
+Item withAspect(Item item, double aspect) => Item(
+      id: item.id,
+      slug: item.slug,
+      kind: item.kind,
+      title: item.title,
+      archetype: item.archetype,
+      source: item.source,
+      palette: item.palette,
+      aspect: aspect,
+      category: item.category,
+      industry: item.industry,
+      style: item.style,
+      platform: item.platform,
+      device: item.device,
+      tech: item.tech,
+      componentType: item.componentType,
+      parentSlug: item.parentSlug,
+      crop: item.crop,
+      blocks: item.blocks,
+      hasCode: item.hasCode,
+      tier: item.tier,
+      responsive: item.responsive,
+      has3d: item.has3d,
+      saves: item.saves,
+      views: item.views,
+      daysAgo: item.daysAgo,
+      colors: item.colors,
+    );
