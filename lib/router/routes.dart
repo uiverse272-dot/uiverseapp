@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../dev/mock_gallery.dart';
 import 'stub_page.dart';
 
 /// Path constants and builders for every §12 screen.
@@ -100,5 +101,5 @@ Widget buildRoute(AppRoute route, BuildContext context, GoRouterState state) => 
       AppRoute.upload => StubPage.of(route, state),
       AppRoute.user => StubPage.of(route, state),
       AppRoute.legal => StubPage.of(route, state),
-      AppRoute.devMock => StubPage.of(route, state),
+      AppRoute.devMock => const MockGalleryPage(),
     };

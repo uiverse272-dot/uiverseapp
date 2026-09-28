@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:uiverse/dev/mock_gallery.dart';
 import 'package:uiverse/data/models.dart';
 import 'package:uiverse/router/detail.dart';
 import 'package:uiverse/router/routes.dart';
@@ -26,7 +27,6 @@ void main() {
     '/upload': 'upload',
     '/u/me': 'user',
     '/legal/takedown': 'legal',
-    '/dev/mock': 'devMock',
     '/screen/s001-ledgerly-homepage': 'screen',
     '/component/c0011-ledgerly-navbar': 'component',
   };
@@ -112,5 +112,10 @@ void main() {
       return const SizedBox();
     }));
     expect(p, DetailPresentation.page);
+  });
+
+  testWidgets('/dev/mock builds the mock gallery', (tester) async {
+    await pumpApp(tester, location: '/dev/mock');
+    expect(find.byType(MockGalleryPage), findsOneWidget);
   });
 }
