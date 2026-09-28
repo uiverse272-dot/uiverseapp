@@ -40,6 +40,15 @@ void main() {
     });
   }
 
+  testWidgets('collection pills hug their label and share a row', (tester) async {
+    await pumpDiscovery(tester, width: 1024, location: '/saved');
+    final all = tester.getRect(find.text('All 0'));
+    final recent = tester.getRect(find.text('Recently saved 0'));
+    expect(tester.getSize(find.ancestor(of: find.text('All 0'), matching: find.byType(AnimatedContainer))).width,
+        lessThan(200));
+    expect(recent.top, all.top);
+  });
+
   testWidgets('"Browse the feed" goes home', (tester) async {
     final app = await pumpDiscovery(tester, location: '/saved');
     await tester.tap(find.text('Browse the feed'));

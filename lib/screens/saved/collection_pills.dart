@@ -40,12 +40,7 @@ class _CollectionPillsState extends State<CollectionPills> {
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        _Pill(
-          label: 'All',
-          count: s.count,
-          selected: widget.active == 'all',
-          onTap: () => widget.onSelect('all'),
-        ),
+        _Pill(label: 'All', count: s.count, selected: widget.active == 'all', onTap: () => widget.onSelect('all')),
         for (final SaveCollection col in s.collections)
           _Pill(
             label: col.name,
@@ -90,22 +85,29 @@ class _Pill extends StatelessWidget {
           duration: motion(context, kTransition),
           height: 32,
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected ? c.accent : null,
             border: Border.all(color: c.border),
           ),
-          child: Text.rich(
-            TextSpan(
-              text: label,
-              children: [
-                TextSpan(
-                  text: ' $count',
-                  style: TextStyle(color: fg.withValues(alpha: fg.a * 0.6), fontFeatures: UiText.tabular),
-                ),
-              ],
+          // widthFactor 1: centre vertically but hug the label; a plain
+          // `alignment` would stretch the pill to the full Wrap width.
+          child: Center(
+            widthFactor: 1,
+            child: Text.rich(
+              TextSpan(
+                text: label,
+                children: [
+                  TextSpan(
+                    text: ' $count',
+                    style: TextStyle(
+                      color: fg.withValues(alpha: fg.a * 0.6),
+                      fontFeatures: UiText.tabular,
+                    ),
+                  ),
+                ],
+              ),
+              style: UiText.body.copyWith(color: fg),
             ),
-            style: UiText.body.copyWith(color: fg),
           ),
         );
       },
