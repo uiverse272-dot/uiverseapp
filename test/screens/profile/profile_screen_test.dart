@@ -35,6 +35,21 @@ void main() {
     expect(tester.getTopLeft(settings).dy, greaterThan(tester.getTopLeft(collections).dy));
   });
 
+  testWidgets('phones get a Browse section for rail / More-only screens', (tester) async {
+    final router = await pumpDirectory(tester, location: '/u/me', width: 390);
+    expect(find.text('Browse'), findsOneWidget);
+    for (final (_, _, String note) in kBrowseLinks) {
+      expect(find.text(note), findsOneWidget);
+    }
+    await tapVisible(tester, find.text('Colour systems pulled from real products.'));
+    expect(locationOf(router), '/palettes');
+  });
+
+  testWidgets('no Browse section from 768 (rail and More cover it)', (tester) async {
+    await pumpDirectory(tester, location: '/u/me', width: 768);
+    expect(find.text('Browse'), findsNothing);
+  });
+
   testWidgets('a link card navigates', (tester) async {
     final router = await pumpDirectory(tester, location: '/u/me', width: 1024);
     await tapVisible(tester, find.text('Plan, profile, notifications.'));

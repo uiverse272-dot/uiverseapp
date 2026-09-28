@@ -25,6 +25,16 @@ const List<(String, String, String)> kProfileLinks = [
   ('Settings', Routes.pricing, 'Plan, profile, notifications.'),
 ];
 
+/// Phone-only "Browse" cards (< 768): screens that live in the rail or the
+/// More menu, which phones don't show.
+const List<(String, String, String)> kBrowseLinks = [
+  ('Palettes', Routes.palettes, 'Colour systems pulled from real products.'),
+  ('Layouts', Routes.layouts, 'Section skeletons, counted by use.'),
+  ('Creators', Routes.creators, 'Studios and designers behind the captures.'),
+  ('3D & motion', Routes.threeD, 'Scenes, WebGL heroes and interactive bits.'),
+  ('Pricing', Routes.pricing, 'Free, Pro and Team plans.'),
+];
+
 /// `/u/:handle` (§12). Every handle that is not a source (see
 /// [profileRedirect]) shows the same "Your profile" hub, as on the web.
 class ProfileScreen extends StatelessWidget {
@@ -34,11 +44,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool twoCol = MediaQuery.sizeOf(context).width >= Bp.sm;
-    final List<Widget> cards = [
-      for (final (String label, String href, String note) in kProfileLinks)
-        _LinkCard(label: label, note: note, onTap: () => context.go(href)),
-    ];
+    final double w = MediaQuery.sizeOf(context).width;
     return NarrowPage(
       children: [
         const PageHeader(
@@ -48,26 +54,50 @@ class ProfileScreen extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (int i = 0; i < cards.length; i += twoCol ? 2 : 1) ...[
-                if (i > 0) const SizedBox(height: 16),
-                if (twoCol)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: cards[i]),
-                      const SizedBox(width: 16),
-                      Expanded(child: i + 1 < cards.length ? cards[i + 1] : const SizedBox.shrink()),
-                    ],
-                  )
-                else
-                  cards[i],
-              ],
-            ],
-          ),
+          child: _CardGrid(links: kProfileLinks, twoCol: w >= Bp.sm),
         ),
+        if (w < Bp.md) ...[
+          const SectionHead(title: 'Browse'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 32),
+            child: _CardGrid(links: kBrowseLinks, twoCol: w >= Bp.sm),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// [links] as link cards, one or two per row, gap 16.
+class _CardGrid extends StatelessWidget {
+  const _CardGrid({required this.links, required this.twoCol});
+
+  final List<(String, String, String)> links;
+  final bool twoCol;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> cards = [
+      for (final (String label, String href, String note) in links)
+        _LinkCard(label: label, note: note, onTap: () => context.go(href)),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (int i = 0; i < cards.length; i += twoCol ? 2 : 1) ...[
+          if (i > 0) const SizedBox(height: 16),
+          if (twoCol)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: cards[i]),
+                const SizedBox(width: 16),
+                Expanded(child: i + 1 < cards.length ? cards[i + 1] : const SizedBox.shrink()),
+              ],
+            )
+          else
+            cards[i],
+        ],
       ],
     );
   }
