@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
 import '../widgets/core/ui_icon.dart';
-import 'hover_tap.dart';
+import '../widgets/core/hover_tap.dart';
 import 'nav_items.dart';
 
 /// Phone tab bar (§9.5): 56 + safe area, five cells split by `rule` lines.

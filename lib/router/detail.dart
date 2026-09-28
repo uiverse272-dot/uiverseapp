@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../data/models.dart';
 import '../shell/app_shell.dart';
-import '../shell/hover_tap.dart';
+import 'package:uiverse/widgets/core/hover_tap.dart';
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../widgets/core/ui_icon.dart';

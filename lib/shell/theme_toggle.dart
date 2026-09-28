@@ -5,7 +5,7 @@ import '../state/theme.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
 import '../widgets/core/ui_icon.dart';
-import 'hover_tap.dart';
+import '../widgets/core/hover_tap.dart';
 
 /// Light/dark switch. Shows the *destination* icon: Moon in light, Sun in dark (§15).
 ///

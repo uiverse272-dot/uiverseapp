@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data/query.dart';
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import 'bottom_nav.dart';
@@ -18,7 +19,7 @@ class AppShell extends StatelessWidget {
   final String location;
   final Widget child;
 
-  /// Parse-chip builder for the navbar search dropdown (from the data layer).
+  /// Parse-chip builder for the navbar search dropdown; defaults to [readingAsChips].
   final ReadingAsBuilder? readingAs;
 
   @override
@@ -37,7 +38,7 @@ class AppShell extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Navbar(readingAs: readingAs),
+                  Navbar(readingAs: readingAs ?? readingAsChips),
                   Expanded(
                     child: MediaQuery.removePadding(
                       context: context,
@@ -55,3 +56,8 @@ class AppShell extends StatelessWidget {
     );
   }
 }
+
+/// "dimension: label" chips for a query, via the data layer's [parseQuery] (§10.1).
+List<String> readingAsChips(String query) => [
+      for (final t in parseQuery(query).terms) '${t.dimension}: ${t.label}',
+    ];

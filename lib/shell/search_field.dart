@@ -9,7 +9,7 @@ import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
 import '../widgets/core/ui_icon.dart';
-import 'hover_tap.dart';
+import '../widgets/core/hover_tap.dart';
 
 /// Given the typed query, the "Reading as" chip labels (`"Style: dark"`, …).
 ///

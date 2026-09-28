@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/uiverse_colors.dart';
+import '../../theme/uiverse_colors.dart';
 
 /// Tappable region without Material ink: hover state for pointers, keyboard
 /// activation, a 2px accent focus outline (§14) and a minimum hit size.

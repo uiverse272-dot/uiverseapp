@@ -7,7 +7,7 @@ import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
 import '../widgets/core/logo_mark.dart';
 import '../widgets/core/ui_icon.dart';
-import 'hover_tap.dart';
+import '../widgets/core/hover_tap.dart';
 import 'nav_items.dart';
 import 'theme_toggle.dart';
 
