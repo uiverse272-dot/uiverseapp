@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router/router.dart';
 import 'state/theme.dart';
 import 'theme/uiverse_theme.dart';
+import 'widgets/save/save_toast.dart';
 
+/// Root widget. Needs `sharedPreferencesProvider` overridden in its [ProviderScope].
 class UiverseApp extends ConsumerWidget {
   const UiverseApp({super.key});
 
@@ -17,6 +19,7 @@ class UiverseApp extends ConsumerWidget {
       darkTheme: uiverseTheme(Brightness.dark),
       themeMode: ref.watch(themeModeProvider),
       routerConfig: ref.watch(routerProvider),
+      builder: (context, child) => SaveToastLayer(child: child ?? const SizedBox.shrink()),
     );
   }
 }
