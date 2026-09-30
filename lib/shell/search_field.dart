@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:uiverse/widgets/core/bare_input.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
@@ -178,7 +179,7 @@ class _SearchFieldState extends State<SearchField> {
                 textInputAction: TextInputAction.search,
                 style: UiText.mono(big ? 15 : 13, color: fg),
                 cursorColor: fg,
-                decoration: InputDecoration.collapsed(
+                decoration: bareInput(
                   hintText: big
                       ? 'Try: ${kSearchExamples[_example]}'
                       : 'Site, component, style, or industry',

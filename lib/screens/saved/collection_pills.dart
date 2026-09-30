@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uiverse/widgets/core/bare_input.dart';
 
 import '../../state/saves.dart';
 import '../../theme/motion.dart';
@@ -206,7 +207,7 @@ class _NewCollectionInputState extends State<_NewCollectionInput> {
         textInputAction: TextInputAction.done,
         style: UiText.body.copyWith(color: c.text),
         cursorColor: c.text,
-        decoration: InputDecoration.collapsed(
+        decoration: bareInput(
           hintText: 'Collection name',
           hintStyle: UiText.body.copyWith(color: c.text3),
         ),

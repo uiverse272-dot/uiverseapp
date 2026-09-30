@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:uiverse/widgets/core/bare_input.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:uiverse/widgets/core/hover_tap.dart';
@@ -229,7 +230,7 @@ class _SaveToastState extends ConsumerState<SaveToast> {
                   style: UiText.body.copyWith(color: c.text),
                   cursorColor: c.text,
                   textInputAction: TextInputAction.done,
-                  decoration: InputDecoration.collapsed(
+                  decoration: bareInput(
                     hintText: 'New collection…',
                     hintStyle: UiText.body.copyWith(color: c.text3),
                   ),
