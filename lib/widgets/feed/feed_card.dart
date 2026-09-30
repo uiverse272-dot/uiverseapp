@@ -30,6 +30,23 @@ class FeedCard extends StatefulWidget {
 class _FeedCardState extends State<FeedCard> {
   final ValueNotifier<bool> _lifted = ValueNotifier<bool>(false);
 
+  /// Built once per item/crop: a rebuilt card must hand the framework the same
+  /// widget instance, or the whole mock page tree is rebuilt with it.
+  late Widget _mock = _buildMock();
+
+  Widget _buildMock() {
+    final crop = widget.crop;
+    return MockScreen(item: crop == null ? widget.item : withAspect(widget.item, crop));
+  }
+
+  @override
+  void didUpdateWidget(FeedCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.item, widget.item) || oldWidget.crop != widget.crop) {
+      _mock = _buildMock();
+    }
+  }
+
   @override
   void dispose() {
     _lifted.dispose();
@@ -43,7 +60,6 @@ class _FeedCardState extends State<FeedCard> {
     final item = widget.item;
     final c = context.ui;
     final wide = MediaQuery.sizeOf(context).width >= Bp.md;
-    final preview = widget.crop == null ? item : withAspect(item, widget.crop!);
 
     final plate = DecoratedBox(
       decoration: BoxDecoration(color: c.surface, border: Border.all(color: c.border)),
@@ -56,7 +72,7 @@ class _FeedCardState extends State<FeedCard> {
             padding: const EdgeInsets.all(1),
             child: Stack(
               children: [
-                MockScreen(item: preview),
+                _mock,
                 if (item.isPremium) const Positioned(left: 6, top: 6, child: _ProBadge()),
                 if (wide)
                   Positioned(
@@ -64,12 +80,14 @@ class _FeedCardState extends State<FeedCard> {
                     bottom: 6,
                     child: ValueListenableBuilder<bool>(
                       valueListenable: _lifted,
-                      builder: (context, lifted, child) => AnimatedOpacity(
-                        opacity: lifted ? 1 : 0,
+                      // AnimatedSwitcher keeps the badges out of the tree while
+                      // hidden and fades them on lift.
+                      builder: (context, lifted, _) => AnimatedSwitcher(
                         duration: motion(context, kTransition),
-                        child: child,
+                        child: lifted
+                            ? _CornerBadges(key: const ValueKey<bool>(true), item: item)
+                            : const SizedBox.shrink(),
                       ),
-                      child: _CornerBadges(item: item),
                     ),
                   ),
               ],
@@ -186,7 +204,7 @@ class _ProBadge extends StatelessWidget {
 
 /// Code / 3D / Component badges: fixed paper + ink, theme independent.
 class _CornerBadges extends StatelessWidget {
-  const _CornerBadges({required this.item});
+  const _CornerBadges({super.key, required this.item});
 
   final Item item;
 

@@ -9,6 +9,9 @@ import 'theme/uiverse_theme.dart';
 import 'widgets/core/back_dismiss.dart';
 import 'widgets/save/save_toast.dart';
 
+final ThemeData _lightTheme = uiverseTheme(Brightness.light);
+final ThemeData _darkTheme = uiverseTheme(Brightness.dark);
+
 /// Root widget. Needs `sharedPreferencesProvider` overridden in its [ProviderScope].
 class UiverseApp extends ConsumerWidget {
   const UiverseApp({super.key});
@@ -19,8 +22,11 @@ class UiverseApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Uiverse',
       debugShowCheckedModeBanner: false,
-      theme: uiverseTheme(Brightness.light),
-      darkTheme: uiverseTheme(Brightness.dark),
+      theme: _lightTheme,
+      darkTheme: _darkTheme,
+      // No cross-fade: lerping the tokens rebuilds every themed widget (all
+      // cards and previews) on each frame of the default 200ms animation.
+      themeAnimationDuration: Duration.zero,
       themeMode: ref.watch(themeModeProvider),
       routerConfig: router,
       // Esc goes through BackDismissRoot (same path as Android back).

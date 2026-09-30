@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../mock/mock_screen.dart';
@@ -29,7 +30,7 @@ class ExploreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ExploreGroup> groups = exploreGroups();
+    final List<ExploreGroup> groups = kExploreGroups;
     return CustomScrollView(
       slivers: [
         const SliverShell(
@@ -93,22 +94,40 @@ class _TileGrid extends StatelessWidget {
     final int cols = exploreColumns(MediaQuery.sizeOf(context).width);
     // Label row: 8 + 13×1.5 (scaled) + 8, plus the 1px top and bottom borders.
     final double labelRow = 16 + MediaQuery.textScalerOf(context).scale(13) * 1.5;
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        final double w = (constraints.crossAxisExtent - kExploreGap * (cols - 1)) / cols;
-        return SliverGrid.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: cols,
-            mainAxisSpacing: kExploreGap,
-            crossAxisSpacing: kExploreGap,
-            mainAxisExtent: (w - 2) * 3 / 4 + labelRow + 2,
-          ),
-          itemCount: tiles.length,
-          itemBuilder: (context, i) => ExploreTileCard(tile: tiles[i]),
-        );
-      },
+    return SliverGrid.builder(
+      gridDelegate: _TileGridDelegate(cols: cols, labelRow: labelRow),
+      itemCount: tiles.length,
+      itemBuilder: (context, i) => ExploreTileCard(tile: tiles[i]),
     );
   }
+}
+
+/// Fixed-column grid whose tile height follows the tile width (4:3 preview +
+/// label row). Deriving it in [getLayout] avoids a `SliverLayoutBuilder`, which
+/// would rebuild every visible tile on each scroll frame.
+class _TileGridDelegate extends SliverGridDelegate {
+  const _TileGridDelegate({required this.cols, required this.labelRow});
+
+  final int cols;
+  final double labelRow;
+
+  @override
+  SliverGridLayout getLayout(SliverConstraints constraints) {
+    final double w = (constraints.crossAxisExtent - kExploreGap * (cols - 1)) / cols;
+    final double h = (w - 2) * 3 / 4 + labelRow + 2;
+    return SliverGridRegularTileLayout(
+      crossAxisCount: cols,
+      mainAxisStride: h + kExploreGap,
+      crossAxisStride: w + kExploreGap,
+      childMainAxisExtent: h,
+      childCrossAxisExtent: w,
+      reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
+    );
+  }
+
+  @override
+  bool shouldRelayout(_TileGridDelegate oldDelegate) =>
+      oldDelegate.cols != cols || oldDelegate.labelRow != labelRow;
 }
 
 /// Explore tile: 4:3 preview on bg-subtle under a bottom black scrim, then
@@ -121,6 +140,8 @@ class ExploreTileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
+    // Built outside the hover builder so hover/focus never rebuilds the mock.
+    final preview = _Preview(tile: tile);
     return HoverTap(
       onTap: () => context.go(tile.href),
       link: true,
@@ -135,7 +156,7 @@ class ExploreTileCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: _Preview(tile: tile)),
+            Expanded(child: preview),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: Row(
@@ -163,10 +184,29 @@ class ExploreTileCard extends StatelessWidget {
   }
 }
 
-class _Preview extends StatelessWidget {
+class _Preview extends StatefulWidget {
   const _Preview({required this.tile});
 
   final ExploreTile tile;
+
+  @override
+  State<_Preview> createState() => _PreviewState();
+}
+
+class _PreviewState extends State<_Preview> {
+  // One MockScreen per cover: a new instance would rebuild the whole mock.
+  late Widget? _mock = _buildMock();
+
+  Widget? _buildMock() {
+    final cover = widget.tile.cover;
+    return cover == null ? null : MockScreen(item: withAspect(cover, 4 / 3));
+  }
+
+  @override
+  void didUpdateWidget(_Preview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.tile.cover, widget.tile.cover)) _mock = _buildMock();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,14 +216,11 @@ class _Preview extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           ColoredBox(color: c.bgSubtle),
-          if (tile.cover != null)
+          if (_mock != null)
             Transform.scale(
               scale: 1.02,
               alignment: Alignment.topLeft,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: MockScreen(item: withAspect(tile.cover!, 4 / 3)),
-              ),
+              child: Align(alignment: Alignment.topLeft, child: _mock),
             ),
           // bg-gradient-to-t from-black/45 to-transparent, opacity 80%.
           const DecoratedBox(
