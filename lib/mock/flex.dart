@@ -43,6 +43,10 @@ class MParentData extends ContainerBoxParentData<RenderBox> {
 
   /// `max-width`/`max-height` along the main axis while growing, in px.
   double maxMain = double.infinity;
+
+  /// Scratch for [RenderMFlex.performLayout]: this child's main-axis size so
+  /// far (kept here instead of a list allocated on every layout).
+  double basis = 0;
 }
 
 /// Per-child flex / grid settings. Must be a direct child of [MFlex]/[MGridBox].
@@ -217,21 +221,20 @@ class RenderMFlex extends RenderBox
     var content = 0.0;
     var sumFactor = 0.0;
     var sumGrowBasis = 0.0;
-    final mains = <double>[];
 
     var child = firstChild;
     while (child != null) {
       final pd = child.parentData! as MParentData;
       n++;
       if (pd.flex > 0 && mainBounded) {
-        mains.add(0);
+        pd.basis = 0;
         sumFactor += pd.flex;
       } else {
         // Widths resolve top-down (a `%` bar is a share of the row), heights
         // bottom-up (a column child is as tall as its content).
         child.layout(_make(0, _h ? mainMax : double.infinity, crossLo, crossHi), parentUsesSize: true);
         final basis = _main(child.size);
-        mains.add(basis);
+        pd.basis = basis;
         content += basis;
         final g = pd.flex > 0 ? pd.flex : pd.grow;
         if (g > 0) {
@@ -248,7 +251,6 @@ class RenderMFlex extends RenderBox
 
     // Grow (or shrink) the flexible children.
     if (sumFactor > 0) {
-      var i = 0;
       child = firstChild;
       while (child != null) {
         final pd = child.parentData! as MParentData;
@@ -257,21 +259,20 @@ class RenderMFlex extends RenderBox
         if (g > 0) {
           double target;
           if (free > 0) {
-            target = mains[i] + free * g / sumFactor;
+            target = pd.basis + free * g / sumFactor;
           } else if (basis0) {
             target = 0;
           } else if (free < 0 && sumGrowBasis > 0) {
-            target = math.max(0, mains[i] + free * mains[i] / sumGrowBasis);
+            target = math.max(0, pd.basis + free * pd.basis / sumGrowBasis);
           } else {
-            target = mains[i];
+            target = pd.basis;
           }
           target = math.min(target, pd.maxMain);
-          if (basis0 || target != mains[i]) {
+          if (basis0 || target != pd.basis) {
             child.layout(_make(target, target, crossLo, crossHi), parentUsesSize: true);
-            mains[i] = _main(child.size);
+            pd.basis = _main(child.size);
           }
         }
-        i++;
         child = childAfter(child);
       }
     }
@@ -289,15 +290,14 @@ class RenderMFlex extends RenderBox
       crossSize = crossSize.clamp(crossMin, crossMax).toDouble();
     }
     if (stretch && !crossTight) {
-      var i = 0;
       child = firstChild;
       while (child != null) {
         if (_cross(child.size) != crossSize) {
-          final m = mains[i];
+          final pd = child.parentData! as MParentData;
+          final m = pd.basis;
           child.layout(_make(m, m, crossSize, crossSize), parentUsesSize: true);
-          mains[i] = _main(child.size);
+          pd.basis = _main(child.size);
         }
-        i++;
         child = childAfter(child);
       }
     }
