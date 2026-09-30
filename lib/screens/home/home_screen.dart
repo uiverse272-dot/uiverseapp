@@ -13,6 +13,7 @@ import '../../widgets/feed/pick_of_the_week.dart';
 import '../../widgets/feed/url_query.dart';
 import '../../widgets/section/section.dart';
 import 'home_chips.dart';
+import '../../widgets/core/row_grid.dart';
 
 // The catalog is immutable, so the home lists are computed once and reused
 // across rebuilds (the router rebuilds Home under every detail overlay).
@@ -73,15 +74,23 @@ class HomeScreen extends StatelessWidget {
                         title: 'Popular this week',
                         onMore: () => context.go(withQuery(Routes.web, const {'sort': 'trending'})),
                       ),
-                      PopularGrid(items: popular),
                     ],
-                    const SizedBox(height: 36),
-                    SectionHead(
-                      title: browsing ? 'Recommended for you' : '${active.label} · ${items.length} results',
-                      moreLabel: browsing ? 'more' : 'clear',
-                      onMore: () => context.go(browsing ? Routes.explore : Routes.home),
-                    ),
                   ],
+                ),
+              ),
+            ),
+            if (browsing)
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: gutter),
+                sliver: PopularGrid(items: popular),
+              ),
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(gutter, 36, gutter, 0),
+              sliver: SliverToBoxAdapter(
+                child: SectionHead(
+                  title: browsing ? 'Recommended for you' : '${active.label} · ${items.length} results',
+                  moreLabel: browsing ? 'more' : 'clear',
+                  onMore: () => context.go(browsing ? Routes.explore : Routes.home),
                 ),
               ),
             ),
@@ -102,33 +111,17 @@ class HomeScreen extends StatelessWidget {
 }
 
 /// "Popular this week": fixed 3:4 cards in 2 / 3 (≥640) / 6 (≥1280) columns,
-/// column gap 16, row gap 24.
+/// column gap 16, row gap 24. A sliver: rows below the fold are built lazily.
 class PopularGrid extends StatelessWidget {
   const PopularGrid({super.key, required this.items});
 
   final List<Item> items;
 
   @override
-  Widget build(BuildContext context) {
-    final double w = MediaQuery.sizeOf(context).width;
-    final int cols = bpColumns(w, base: 2, sm: 3, xl: 6);
-    final rows = <Widget>[];
-    for (int r = 0; r * cols < items.length; r++) {
-      if (r > 0) rows.add(const SizedBox(height: 24));
-      rows.add(Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (int c = 0; c < cols; c++) ...[
-            if (c > 0) const SizedBox(width: 16),
-            Expanded(
-              child: r * cols + c < items.length
-                  ? FeedCard(items[r * cols + c], crop: 3 / 4)
-                  : const SizedBox.shrink(),
-            ),
-          ],
-        ],
-      ));
-    }
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: rows);
-  }
+  Widget build(BuildContext context) => SliverRowGrid(
+        count: items.length,
+        columns: bpColumns(MediaQuery.sizeOf(context).width, base: 2, sm: 3, xl: 6),
+        rowGap: 24,
+        itemBuilder: (context, i) => FeedCard(items[i], crop: 3 / 4),
+      );
 }

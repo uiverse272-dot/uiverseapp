@@ -17,6 +17,7 @@ import '../widgets/core/lift_on_press.dart';
 import '../widgets/core/ui_icon.dart';
 import 'parts.dart';
 import '../widgets/core/links.dart';
+import '../widgets/core/row_grid.dart';
 
 /// The detail tabs, in order (§10.9).
 enum DetailTab {
@@ -463,26 +464,10 @@ class CardGrid extends StatelessWidget {
     final w = MediaQuery.sizeOf(context).width;
     final cols = bpColumns(w, base: 2, sm: 3, lg: 6);
     final build = cardBuilder ?? (BuildContext ctx, Item i) => MiniCard(item: i);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (int r = 0; r * cols < items.length; r++) ...[
-          if (r > 0) const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (int col = 0; col < cols; col++) ...[
-                if (col > 0) const SizedBox(width: 16),
-                Expanded(
-                  child: r * cols + col < items.length
-                      ? build(context, items[r * cols + col])
-                      : const SizedBox.shrink(),
-                ),
-              ],
-            ],
-          ),
-        ],
-      ],
+    return RowGrid(
+      count: items.length,
+      columns: cols,
+      itemBuilder: (context, i) => build(context, items[i]),
     );
   }
 }
