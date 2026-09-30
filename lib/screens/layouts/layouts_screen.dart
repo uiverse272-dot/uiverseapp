@@ -7,11 +7,11 @@ import '../../mock/mock_screen.dart';
 import '../../router/routes.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
-import '../../widgets/core/hover_tap.dart';
 import '../../widgets/core/ink_box.dart';
 import '../../widgets/feed/item_aspect.dart';
 import '../../widgets/core/box_button.dart';
 import '../directory/directory_page.dart';
+import '../../widgets/core/links.dart';
 
 /// `/layouts` (§12): section skeletons derived from real captures.
 class LayoutsScreen extends StatelessWidget {
@@ -164,20 +164,12 @@ class _SectionLink extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Flexible(
-          child: HoverTap(
+          child: LinkInk.quiet(
+            block.label,
             onTap: () => context.go(componentFeedFor(block.type)),
-            link: true,
+            style: UiText.small,
+            maxLines: 1,
             minSize: const Size(0, 24),
-            builder: (context, hovered) => Text(
-              block.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: UiText.small.copyWith(
-                color: hovered ? c.text : c.text2,
-                decoration: hovered ? TextDecoration.underline : null,
-                decorationColor: c.text,
-              ),
-            ),
           ),
         ),
       ],

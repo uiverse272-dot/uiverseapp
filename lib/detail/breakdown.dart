@@ -160,7 +160,7 @@ class _DerivedLayout extends StatelessWidget {
           const SizedBox(height: 4),
           Align(
             alignment: Alignment.centerLeft,
-            child: TextLink('Save as a layout →', onTap: () => goTo(context, Routes.layouts)),
+            child: LinkInk.quiet('Save as a layout →', onTap: () => goTo(context, Routes.layouts)),
           ),
         ],
       ),
