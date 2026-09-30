@@ -122,7 +122,7 @@ class _LoadMore extends StatelessWidget {
       builder: (context, hovered) => AnimatedContainer(
         duration: motion(context, kTransition),
         curve: kTransitionEase,
-        transform: Matrix4.translationValues(0, hovered ? -2 : 0, 0),
+        transform: Matrix4.translationValues(0, hovered ? -kLiftOffset : 0, 0),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color: c.surface,

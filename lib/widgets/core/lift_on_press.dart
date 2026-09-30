@@ -63,7 +63,7 @@ class _LiftOnPressState extends State<LiftOnPress> {
             child: AnimatedContainer(
               duration: motion(context, kTransition),
               curve: kEase,
-              transform: Matrix4.translationValues(lifted ? -2 : 0, lifted ? -2 : 0, 0),
+              transform: Matrix4.translationValues(lifted ? -kLiftOffset : 0, lifted ? -kLiftOffset : 0, 0),
               decoration: BoxDecoration(
                 boxShadow: [
                   hardShadow(lifted ? widget.shadow : 0, _focused ? c.accent : c.border),

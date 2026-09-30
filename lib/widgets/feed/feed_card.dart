@@ -59,7 +59,7 @@ class _FeedCardState extends State<FeedCard> {
   Widget build(BuildContext context) {
     final item = widget.item;
     final c = context.ui;
-    final wide = MediaQuery.sizeOf(context).width >= Bp.md;
+    final wide = context.isWide;
 
     final plate = DecoratedBox(
       decoration: BoxDecoration(color: c.surface, border: Border.all(color: c.border)),

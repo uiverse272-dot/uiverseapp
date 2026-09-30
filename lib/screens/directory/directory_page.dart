@@ -5,12 +5,7 @@ import '../../widgets/section/section.dart';
 
 /// Directory grid columns (`sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`):
 /// 1 below 640, 2 below 1024, 3 below 1280, else 4.
-int directoryColumns(double width) {
-  if (width >= Bp.xl) return 4;
-  if (width >= Bp.lg) return 3;
-  if (width >= Bp.sm) return 2;
-  return 1;
-}
+int directoryColumns(double width) => bpColumns(width, base: 1, sm: 2, lg: 3, xl: 4);
 
 /// Gap between directory cards, both axes (`gap-4`).
 const double kDirectoryGap = 16;

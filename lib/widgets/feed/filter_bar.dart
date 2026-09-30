@@ -54,7 +54,7 @@ class FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    final wide = MediaQuery.sizeOf(context).width >= Bp.md;
+    final wide = context.isWide;
     final bool code = value.param('code') == 'true';
     final bool active = code || defs.any((d) => value.param(d.param) != null);
     final String? sort = value.param('sort');

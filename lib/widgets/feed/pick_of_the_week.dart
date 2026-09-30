@@ -53,7 +53,7 @@ class _PickOfTheWeekState extends ConsumerState<PickOfTheWeek> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final folded = ref.read(pickFoldedProvider);
-      final wide = MediaQuery.sizeOf(context).width >= Bp.md;
+      final wide = context.isWide;
       if (folded || !wide) return;
       _timer = Timer(kPickAutoOpen, () {
         if (mounted && _mode == _Mode.tab) setState(() => _mode = _Mode.card);
@@ -115,7 +115,7 @@ class _PickTab extends StatelessWidget {
         label: 'Pick of the week',
         builder: (context, hovered) => AnimatedContainer(
           duration: motion(context, kTransition),
-          transform: Matrix4.translationValues(0, hovered ? -2 : 0, 0),
+          transform: Matrix4.translationValues(0, hovered ? -kLiftOffset : 0, 0),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: c.signal,

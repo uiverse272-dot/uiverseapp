@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:uiverse/widgets/core/bare_input.dart';
+import '../widgets/core/bare_input.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
@@ -68,6 +68,8 @@ class _SearchFieldState extends State<SearchField> {
     _q.addListener(_sync);
     if (widget.big) {
       _rotate = Timer.periodic(const Duration(milliseconds: 3200), (_) {
+        // The rotating hint is hidden while there is text; don't rebuild for it.
+        if (_q.text.isNotEmpty) return;
         setState(() => _example = (_example + 1) % kSearchExamples.length);
       });
     } else {
@@ -151,12 +153,12 @@ class _SearchFieldState extends State<SearchField> {
     final c = context.ui;
     final big = widget.big;
     final fg = big ? c.text : c.onSignal;
-    final showKbd = !big && MediaQuery.sizeOf(context).width >= 1024;
+    final showKbd = !big && MediaQuery.sizeOf(context).width >= Bp.lg;
 
     final box = BoxDecoration(
       color: big ? c.surface : null,
       border: Border.all(color: big ? c.border : c.onSignal),
-      boxShadow: _focus.hasFocus ? [hardShadow(3, fg)] : null,
+      boxShadow: _focus.hasFocus ? [hardShadow(Lift.l2, fg)] : null,
     );
     final row = Padding(
       padding: EdgeInsets.symmetric(horizontal: big ? 16 : 12),

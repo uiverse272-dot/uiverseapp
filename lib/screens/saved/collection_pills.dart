@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uiverse/widgets/core/bare_input.dart';
+import '../../widgets/core/bare_input.dart';
 
 import '../../state/saves.dart';
 import '../../theme/motion.dart';

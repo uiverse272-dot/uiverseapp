@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../data/models.dart';
 import '../shell/app_shell.dart';
-import 'package:uiverse/widgets/core/hover_tap.dart';
+import '../widgets/core/hover_tap.dart';
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../widgets/core/ui_icon.dart';
@@ -88,7 +88,7 @@ class DetailOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    final wide = MediaQuery.sizeOf(context).width >= Bp.md;
+    final wide = context.isWide;
     final close = Positioned(
       top: 0,
       right: 0,

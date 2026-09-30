@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:uiverse/widgets/core/bare_input.dart';
+import '../core/bare_input.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:uiverse/widgets/core/hover_tap.dart';
+import '../core/hover_tap.dart';
 import '../core/back_dismiss.dart';
 import '../../state/saves.dart';
 import '../../theme/motion.dart';

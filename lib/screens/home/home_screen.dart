@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
     final Item pick = _pick;
     final bool browsing = active.value == null;
     final double gutter = pageGutter(context);
-    final bool wide = MediaQuery.sizeOf(context).width >= Bp.md;
+    final bool wide = context.isWide;
 
     return Stack(
       children: [
@@ -111,7 +111,7 @@ class PopularGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double w = MediaQuery.sizeOf(context).width;
-    final int cols = w >= Bp.xl ? 6 : (w >= Bp.sm ? 3 : 2);
+    final int cols = bpColumns(w, base: 2, sm: 3, xl: 6);
     final rows = <Widget>[];
     for (int r = 0; r * cols < items.length; r++) {
       if (r > 0) rows.add(const SizedBox(height: 24));

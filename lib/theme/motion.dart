@@ -29,6 +29,13 @@ BoxShadow hardShadow(double d, Color c) =>
 Duration motion(BuildContext context, Duration d) =>
     MediaQuery.maybeDisableAnimationsOf(context) ?? false ? Duration.zero : d;
 
+/// Distance a lifted plate or button moves up (and left, for plates) (§6).
+const double kLiftOffset = 2;
+
+/// Device-frame and scroll-into-view animations on the detail page (§6, §10.9).
+const Duration kFrameSwitch = Duration(milliseconds: 200);
+const Duration kReveal = Duration(milliseconds: 300);
+
 /// Breakpoints (§4.3).
 abstract final class Bp {
   static const double sm = 640;
@@ -36,4 +43,19 @@ abstract final class Bp {
   static const double lg = 1024;
   static const double xl = 1280;
   static const double xxl = 1536;
+}
+
+/// Tailwind-style responsive column count: the value of the widest breakpoint
+/// [width] reaches, falling back to [base] (`grid-cols-2 sm:grid-cols-3 …`).
+int bpColumns(double width, {required int base, int? sm, int? md, int? lg, int? xl}) {
+  if (xl != null && width >= Bp.xl) return xl;
+  if (lg != null && width >= Bp.lg) return lg;
+  if (md != null && width >= Bp.md) return md;
+  if (sm != null && width >= Bp.sm) return sm;
+  return base;
+}
+
+extension ResponsiveContext on BuildContext {
+  /// Tablet/desktop shell (rail instead of bottom nav): window width ≥ 768.
+  bool get isWide => MediaQuery.sizeOf(this).width >= Bp.md;
 }

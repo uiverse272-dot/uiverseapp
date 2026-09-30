@@ -25,7 +25,7 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    final wide = MediaQuery.sizeOf(context).width >= Bp.md;
+    final wide = context.isWide;
     return Material(
       color: c.bg,
       child: SafeArea(

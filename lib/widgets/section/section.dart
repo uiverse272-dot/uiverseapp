@@ -16,7 +16,7 @@ const double kShellWide = 2100;
 const double kShellNarrow = 1100;
 
 /// Page horizontal gutter: 16 on phones, 24 ≥768 (`px-4 md:px-6`).
-double pageGutter(BuildContext context) => MediaQuery.sizeOf(context).width >= Bp.md ? 24 : 16;
+double pageGutter(BuildContext context) => context.isWide ? 24 : 16;
 
 /// Horizontal padding that centres a [maxWidth] container (gutter included)
 /// inside [extent].

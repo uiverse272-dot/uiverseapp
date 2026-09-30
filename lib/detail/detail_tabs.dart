@@ -176,7 +176,7 @@ class ResponsiveTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.ui;
     final native = nativeViewportOf(item);
-    final wide = MediaQuery.sizeOf(context).width >= Bp.md;
+    final wide = context.isWide;
     const flex = <Viewport, int>{Viewport.desktop: 190, Viewport.tablet: 125, Viewport.mobile: 75};
     final tiles = <Widget>[
       for (final vp in Viewport.values) _ViewportTile(item: item, vp: vp, native: native, onPick: onPick),
@@ -460,7 +460,7 @@ class CardGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final cols = w >= Bp.lg ? 6 : (w >= Bp.sm ? 3 : 2);
+    final cols = bpColumns(w, base: 2, sm: 3, lg: 6);
     final build = cardBuilder ?? (BuildContext ctx, Item i) => MiniCard(item: i);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

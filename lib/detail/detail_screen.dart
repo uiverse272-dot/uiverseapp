@@ -44,8 +44,8 @@ class _DetailScreenState extends State<DetailScreen> {
   void _reveal(GlobalKey key) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = key.currentContext;
-      if (ctx == null || !ctx.mounted) return;
-      Scrollable.ensureVisible(ctx, duration: motion(context, const Duration(milliseconds: 300)), curve: kEase)
+      if (!mounted || ctx == null || !ctx.mounted) return;
+      Scrollable.ensureVisible(ctx, duration: motion(context, kReveal), curve: kEase)
           .ignore();
     });
   }
@@ -249,7 +249,7 @@ class _Media extends StatelessWidget {
               final w = device == Viewport.desktop ? box.maxWidth : device.w.clamp(0, box.maxWidth).toDouble();
               return Center(
                 child: AnimatedContainer(
-                  duration: motion(context, const Duration(milliseconds: 200)),
+                  duration: motion(context, kFrameSwitch),
                   curve: kEase,
                   width: w,
                   constraints: BoxConstraints(maxHeight: size.height * 0.76),

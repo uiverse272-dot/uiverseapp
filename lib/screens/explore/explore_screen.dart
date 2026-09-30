@@ -15,13 +15,7 @@ import 'explore_groups.dart';
 const double kExploreGap = 12;
 
 /// Tile columns: 2 / 3 (≥640) / 4 (≥1024) / 6 (≥1280).
-int exploreColumns(double width) => width >= Bp.xl
-    ? 6
-    : width >= Bp.lg
-        ? 4
-        : width >= Bp.sm
-            ? 3
-            : 2;
+int exploreColumns(double width) => bpColumns(width, base: 2, sm: 3, lg: 4, xl: 6);
 
 /// `/explore` — a directory, not a second feed (§12): PageHeader, then one
 /// grid of tiles per group. Every tile opens a filtered feed.

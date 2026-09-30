@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:uiverse/widgets/core/hover_tap.dart';
+import '../widgets/core/hover_tap.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
 import '../widgets/core/logo_mark.dart';
