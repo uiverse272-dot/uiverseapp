@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart' hide Viewport;
 
@@ -95,6 +96,19 @@ class Radial extends ArtLayer {
   final Color color;
 
   @override
+  bool operator ==(Object other) =>
+      other is Radial &&
+      other.fx == fx &&
+      other.fy == fy &&
+      other.rx == rx &&
+      other.ry == ry &&
+      other.stop == stop &&
+      other.color == color;
+
+  @override
+  int get hashCode => Object.hash(fx, fy, rx, ry, stop, color);
+
+  @override
   void paint(Canvas canvas, Rect r) {
     if (rx <= 0 || ry <= 0) return;
     final cx = r.left + r.width * fx;
@@ -120,6 +134,16 @@ class Linear extends ArtLayer {
   final double angle;
   final List<Color?> colors;
   final List<double> stops;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Linear &&
+      other.angle == angle &&
+      listEquals(other.colors, colors) &&
+      listEquals(other.stops, stops);
+
+  @override
+  int get hashCode => Object.hash(angle, Object.hashAll(colors), Object.hashAll(stops));
 
   @override
   void paint(Canvas canvas, Rect r) {
@@ -160,6 +184,23 @@ class Disc extends ArtLayer {
   final double? r;
   final Color? fill;
   final Color? stroke;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Disc &&
+      other.fx == fx &&
+      other.dx == dx &&
+      other.fy == fy &&
+      other.dy == dy &&
+      other.w == w &&
+      other.h == h &&
+      other.strokeW == strokeW &&
+      other.r == r &&
+      other.fill == fill &&
+      other.stroke == stroke;
+
+  @override
+  int get hashCode => Object.hash(fx, dx, fy, dy, w, h, strokeW, r, fill, stroke);
 
   @override
   void paint(Canvas canvas, Rect frame) {
@@ -259,6 +300,11 @@ class RenderMBox extends RenderBox with RenderObjectWithChildMixin<RenderBox> {
 
   Size _deco = Size.zero;
   final LayerHandle<ClipRRectLayer> _clipLayer = LayerHandle<ClipRRectLayer>();
+  final LayerHandle<ClipRectLayer> _clipRectLayer = LayerHandle<ClipRectLayer>();
+
+  // One scratch paint per box: paint() runs for every box of every mock.
+  final Paint _fillPaint = Paint();
+  final Paint _strokePaint = Paint()..style = PaintingStyle.stroke;
 
   void configure(B b) {
     final layout = _w != b.w ||
@@ -279,7 +325,7 @@ class RenderMBox extends RenderBox with RenderObjectWithChildMixin<RenderBox> {
         _bl != b.bl ||
         _br != b.br ||
         _clip != b.clip ||
-        !identical(_layers, b.layers);
+        !listEquals(_layers, b.layers);
     _w = b.w;
     _h = b.h;
     _wf = b.wf;
@@ -367,56 +413,71 @@ class RenderMBox extends RenderBox with RenderObjectWithChildMixin<RenderBox> {
   void paint(PaintingContext context, Offset offset) {
     final canvas = context.canvas;
     final rect = offset & _deco;
-    final rrect = _rrect(offset);
     final rounded = _r > 0;
+    final rrect = rounded ? _rrect(offset) : null;
     if (_bg != null) {
-      final p = Paint()..color = _bg!;
-      rounded ? canvas.drawRRect(rrect, p) : canvas.drawRect(rect, p);
+      _fillPaint.color = _bg!;
+      rounded ? canvas.drawRRect(rrect!, _fillPaint) : canvas.drawRect(rect, _fillPaint);
     }
     if (_layers.isNotEmpty) {
       canvas.save();
-      rounded ? canvas.clipRRect(rrect) : canvas.clipRect(rect);
+      // Square boxes clip on pixel edges: no anti-aliasing needed.
+      rounded ? canvas.clipRRect(rrect!) : canvas.clipRect(rect, doAntiAlias: false);
       for (final l in _layers) {
         l.paint(canvas, rect);
       }
       canvas.restore();
     }
     if (_border != null) {
-      final p = Paint()
+      _strokePaint
         ..color = _border!
-        ..style = PaintingStyle.stroke
         ..strokeWidth = _line;
       final d = _line / 2;
       if (rounded) {
-        canvas.drawRRect(rrect.deflate(d), p);
+        canvas.drawRRect(rrect!.deflate(d), _strokePaint);
       } else {
-        canvas.drawRect(rect.deflate(d), p);
+        canvas.drawRect(rect.deflate(d), _strokePaint);
       }
     }
-    final side = Paint();
-    if (_bt != null) canvas.drawRect(Rect.fromLTWH(rect.left, rect.top, rect.width, _line), side..color = _bt!);
-    if (_bb != null) {
-      canvas.drawRect(Rect.fromLTWH(rect.left, rect.bottom - _line, rect.width, _line), side..color = _bb!);
+    if (_bt != null) {
+      canvas.drawRect(Rect.fromLTWH(rect.left, rect.top, rect.width, _line), _fillPaint..color = _bt!);
     }
-    if (_bl != null) canvas.drawRect(Rect.fromLTWH(rect.left, rect.top, _line, rect.height), side..color = _bl!);
+    if (_bb != null) {
+      canvas.drawRect(Rect.fromLTWH(rect.left, rect.bottom - _line, rect.width, _line), _fillPaint..color = _bb!);
+    }
+    if (_bl != null) {
+      canvas.drawRect(Rect.fromLTWH(rect.left, rect.top, _line, rect.height), _fillPaint..color = _bl!);
+    }
     if (_br != null) {
-      canvas.drawRect(Rect.fromLTWH(rect.right - _line, rect.top, _line, rect.height), side..color = _br!);
+      canvas.drawRect(Rect.fromLTWH(rect.right - _line, rect.top, _line, rect.height), _fillPaint..color = _br!);
     }
 
     final kid = child;
     if (kid == null) return;
     final childOffset = (kid.parentData! as BoxParentData).offset;
-    if (_clip) {
+    if (_clip && rounded) {
+      _clipRectLayer.layer = null;
       _clipLayer.layer = context.pushClipRRect(
         needsCompositing,
         offset,
         Offset.zero & _deco,
-        RRect.fromRectAndRadius(Offset.zero & _deco, Radius.circular(math.min(_r, _deco.shortestSide / 2))),
+        _rrect(Offset.zero),
         (ctx, o) => ctx.paintChild(kid, o + childOffset),
         oldLayer: _clipLayer.layer,
       );
+    } else if (_clip) {
+      _clipLayer.layer = null;
+      _clipRectLayer.layer = context.pushClipRect(
+        needsCompositing,
+        offset,
+        Offset.zero & _deco,
+        (ctx, o) => ctx.paintChild(kid, o + childOffset),
+        clipBehavior: Clip.hardEdge,
+        oldLayer: _clipRectLayer.layer,
+      );
     } else {
       _clipLayer.layer = null;
+      _clipRectLayer.layer = null;
       context.paintChild(kid, offset + childOffset);
     }
   }
@@ -424,6 +485,7 @@ class RenderMBox extends RenderBox with RenderObjectWithChildMixin<RenderBox> {
   @override
   void dispose() {
     _clipLayer.layer = null;
+    _clipRectLayer.layer = null;
     super.dispose();
   }
 
@@ -617,6 +679,12 @@ class BarSeg {
   const BarSeg(this.frac, this.color);
   final double frac;
   final Color color;
+
+  @override
+  bool operator ==(Object other) => other is BarSeg && other.frac == frac && other.color == color;
+
+  @override
+  int get hashCode => Object.hash(frac, color);
 }
 
 /// Equal-width bar columns painted in one pass (chart panels). Fills whatever
@@ -626,6 +694,14 @@ class Bars extends LeafRenderObjectWidget {
 
   final List<List<BarSeg>> columns;
   final double gap, radius, sep;
+
+  bool _sameAs(Bars o) {
+    if (o.gap != gap || o.radius != radius || o.sep != sep || o.columns.length != columns.length) return false;
+    for (var i = 0; i < columns.length; i++) {
+      if (!listEquals(o.columns[i], columns[i])) return false;
+    }
+    return true;
+  }
 
   @override
   RenderBars createRenderObject(BuildContext context) => RenderBars(this);
@@ -639,8 +715,9 @@ class RenderBars extends RenderBox {
 
   Bars _spec;
   set spec(Bars s) {
+    final same = s._sameAs(_spec);
     _spec = s;
-    markNeedsPaint();
+    if (!same) markNeedsPaint();
   }
 
   @override
