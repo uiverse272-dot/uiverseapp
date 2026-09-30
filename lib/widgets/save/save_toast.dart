@@ -12,6 +12,7 @@ import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
 import '../core/ui_icon.dart';
 import 'save_toast_controller.dart';
+import '../core/entrance.dart';
 
 /// Hosts the save toast above [child] (the app's navigator).
 ///
@@ -95,14 +96,7 @@ class _SaveToastState extends ConsumerState<SaveToast> {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: motion(context, kFadeUp),
-      curve: kEase,
-      builder: (context, t, child) => Opacity(
-        opacity: t,
-        child: Transform.translate(offset: Offset(0, 6 * (1 - t)), child: child),
-      ),
+    return FadeUp(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

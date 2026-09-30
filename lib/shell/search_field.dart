@@ -12,6 +12,7 @@ import '../theme/uiverse_text.dart';
 import '../widgets/core/back_dismiss.dart';
 import '../widgets/core/ui_icon.dart';
 import '../widgets/core/hover_tap.dart';
+import '../widgets/core/entrance.dart';
 
 /// Given the typed query, the "Reading as" chip labels (`"Style: dark"`, …).
 ///
@@ -253,10 +254,7 @@ class _SearchFieldState extends State<SearchField> {
           groupId: _tapGroup,
           child: SizedBox(
             width: _width,
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: 1),
-              duration: motion(context, kFadeIn),
-              builder: (context, t, child) => Opacity(opacity: t, child: child),
+            child: FadeIn(
               child: Material(
                 type: MaterialType.transparency,
                 child: Container(

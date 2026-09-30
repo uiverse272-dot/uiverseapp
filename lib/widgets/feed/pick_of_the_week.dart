@@ -21,6 +21,7 @@ import '../core/ui_icon.dart';
 import '../save/save_button.dart';
 import '../section/link_ink.dart';
 import 'item_aspect.dart';
+import '../core/entrance.dart';
 
 /// Delay before the card auto-opens on ≥768 (§6).
 const Duration kPickAutoOpen = Duration(milliseconds: 700);
@@ -108,7 +109,7 @@ class _PickTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.ui;
-    return _FadeUp(
+    return FadeUp(
       child: HoverTap(
         onTap: onTap,
         label: 'Pick of the week',
@@ -158,7 +159,7 @@ class _PickCard extends StatelessWidget {
       container: true,
       label: 'Pick of the week',
       explicitChildNodes: true,
-      child: _SheetIn(
+      child: SheetIn(
         child: Container(
           width: math.min(340, size.width - 32),
           decoration: BoxDecoration(
@@ -404,7 +405,7 @@ class _Details extends StatelessWidget {
       ('Stack', item.tech.map((t) => taxName(kTechnologies, t)).join(', ')),
       ('Captured', timeAgo(item.daysAgo)),
     ];
-    return _FadeIn(
+    return FadeIn(
       child: Container(
         decoration: BoxDecoration(border: Border(top: BorderSide(color: c.border))),
         child: SingleChildScrollView(
@@ -450,60 +451,4 @@ class _Details extends StatelessWidget {
       ),
     );
   }
-}
-
-/// `anim-sheet`: fade + rise 24 + scale 0.99 → 1 over 240ms.
-class _SheetIn extends StatelessWidget {
-  const _SheetIn({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: 1),
-        duration: motion(context, kSheet),
-        curve: kEase,
-        builder: (context, t, child) => Opacity(
-          opacity: t,
-          child: Transform.translate(
-            offset: Offset(0, 24 * (1 - t)),
-            child: Transform.scale(scale: 0.99 + 0.01 * t, child: child),
-          ),
-        ),
-        child: child,
-      );
-}
-
-/// `anim-fade-up`: fade + rise 6 over 220ms.
-class _FadeUp extends StatelessWidget {
-  const _FadeUp({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: 1),
-        duration: motion(context, kFadeUp),
-        curve: kEase,
-        builder: (context, t, child) => Opacity(
-          opacity: t,
-          child: Transform.translate(offset: Offset(0, 6 * (1 - t)), child: child),
-        ),
-        child: child,
-      );
-}
-
-/// `anim-fade-in`: fade over 160ms.
-class _FadeIn extends StatelessWidget {
-  const _FadeIn({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: 1),
-        duration: motion(context, kFadeIn),
-        builder: (context, t, child) => Opacity(opacity: t, child: child),
-        child: child,
-      );
 }

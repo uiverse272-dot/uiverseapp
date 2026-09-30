@@ -14,6 +14,7 @@ import 'nav_items.dart';
 import 'rail.dart';
 import 'search_field.dart';
 import 'theme_toggle.dart';
+import '../widgets/core/entrance.dart';
 
 /// Top bar of ruled cells, 64 tall (§9.3).
 ///
@@ -259,10 +260,7 @@ class _MoreMenuState extends State<_MoreMenu> {
         child: TapRegion(
           groupId: _group,
           onTapOutside: (_) => _close(),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: 1),
-            duration: motion(context, kFadeIn),
-            builder: (context, t, child) => Opacity(opacity: t, child: child),
+          child: FadeIn(
             child: Container(
               width: 192,
               decoration: BoxDecoration(

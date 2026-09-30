@@ -8,6 +8,7 @@ import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../widgets/core/ui_icon.dart';
 import 'routes.dart';
+import '../widgets/core/entrance.dart';
 
 /// How a detail route is shown (§10.12).
 ///
@@ -66,18 +67,7 @@ Page<void> buildDetailPage(BuildContext context, GoRouterState state, Widget bod
     transitionDuration: d,
     reverseTransitionDuration: d,
     transitionsBuilder: (context, animation, _, child) {
-      final t = CurvedAnimation(parent: animation, curve: kEase);
-      return AnimatedBuilder(
-        animation: t,
-        child: child,
-        builder: (context, child) => Opacity(
-          opacity: t.value,
-          child: Transform.translate(
-            offset: Offset(0, 24 * (1 - t.value)),
-            child: Transform.scale(scale: 0.99 + 0.01 * t.value, child: child),
-          ),
-        ),
-      );
+      return sheetTransition(animation, child);
     },
     child: DetailOverlay(
       child: _PresentationScope(value: DetailPresentation.overlay, child: body),

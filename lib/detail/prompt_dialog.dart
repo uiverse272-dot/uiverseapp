@@ -17,6 +17,7 @@ import '../widgets/core/hover_tap.dart';
 import '../widgets/core/ui_icon.dart';
 import '../widgets/save/save_button.dart';
 import 'parts.dart';
+import '../widgets/core/entrance.dart';
 
 /// How long "Copied" replaces "Copy prompt" (§6).
 const Duration kPromptCopiedFor = Duration(milliseconds: 1400);
@@ -34,18 +35,7 @@ Future<void> showPromptDialog(BuildContext context, Item item) {
     barrierColor: context.ui.overlay,
     transitionDuration: d,
     transitionBuilder: (context, animation, _, child) {
-      final t = CurvedAnimation(parent: animation, curve: kEase);
-      return AnimatedBuilder(
-        animation: t,
-        child: child,
-        builder: (context, child) => Opacity(
-          opacity: t.value,
-          child: Transform.translate(
-            offset: Offset(0, 24 * (1 - t.value)),
-            child: Transform.scale(scale: 0.99 + 0.01 * t.value, child: child),
-          ),
-        ),
-      );
+      return sheetTransition(animation, child);
     },
     pageBuilder: (context, _, _) => _PromptSheet(item: item),
   );

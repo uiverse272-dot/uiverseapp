@@ -7,6 +7,7 @@ import '../../theme/uiverse_text.dart';
 import '../core/back_dismiss.dart';
 import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
+import '../core/entrance.dart';
 
 /// Popover panel width and max height (§4.2).
 const double kPopoverWidth = 224;
@@ -182,10 +183,7 @@ class _Panel extends StatelessWidget {
     final c = context.ui;
     return Focus(
       autofocus: true,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: 1),
-        duration: motion(context, kFadeIn),
-        builder: (context, t, child) => Opacity(opacity: t, child: child),
+      child: FadeIn(
         child: Container(
           width: kPopoverWidth,
           constraints: const BoxConstraints(maxHeight: kPopoverMaxHeight),
