@@ -4,16 +4,14 @@ import 'package:go_router/go_router.dart';
 import '../../data/query.dart';
 import '../../router/routes.dart';
 import '../../shell/search_field.dart';
-import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
-import '../../widgets/core/hover_tap.dart';
-import '../../widgets/core/ui_icon.dart';
 import '../../widgets/feed/feed.dart';
 import '../../widgets/feed/url_query.dart';
 import '../../widgets/section/section.dart';
 import 'search_logic.dart';
 import 'segment_tab.dart';
+import '../../widgets/core/ui_chip.dart';
 
 /// Max width of the search column (§4.2).
 const double kSearchColumn = 620;
@@ -153,30 +151,8 @@ class ParseChip extends StatelessWidget {
   final VoidCallback onRemove;
 
   @override
-  Widget build(BuildContext context) {
-    final c = context.ui;
-    final String text = '${term.dimension}: ${term.label}';
-    return HoverTap(
-      onTap: onRemove,
-      label: 'Remove $text',
-      builder: (context, hovered) => AnimatedContainer(
-        duration: motion(context, kTransition),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: c.bgSubtle,
-          border: Border.all(color: hovered ? c.borderStrong : c.border),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(text, style: UiText.small.copyWith(color: c.text)),
-            const SizedBox(width: 4),
-            UiIcon(Ui.close, size: 11, color: c.text),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      RemovableChip('${term.dimension}: ${term.label}', onRemove: onRemove);
 }
 
 /// No query: "Try a natural-language query", suggestion chips, explainer.
@@ -230,21 +206,16 @@ class _Suggestion extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) {
-    final c = context.ui;
-    return HoverTap(
-      onTap: () => context.go(Routes.searchFor(text)),
-      link: true,
-      label: text,
-      builder: (context, hovered) => AnimatedContainer(
-        duration: motion(context, kTransition),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: hovered ? c.bgSubtle : null,
-          border: Border.all(color: c.border),
-        ),
-        child: Text(text, style: UiText.body.copyWith(color: hovered ? c.text : c.text2)),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => UiChip(
+        text,
+        onTap: () => context.go(Routes.searchFor(text)),
+        link: true,
+        semanticLabel: text,
+        height: null,
+        hPad: 12,
+        vPad: 6,
+        style: UiText.body,
+        muted: true,
+        minSize: const Size(48, 48),
+      );
 }

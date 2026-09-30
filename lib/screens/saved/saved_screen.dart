@@ -6,13 +6,12 @@ import '../../data/catalog.dart';
 import '../../data/models.dart';
 import '../../router/routes.dart';
 import '../../state/saves.dart';
-import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
-import '../../widgets/core/hover_tap.dart';
 import '../../widgets/feed/feed.dart';
 import '../../widgets/section/section.dart';
 import 'collection_pills.dart';
+import '../../widgets/core/ui_chip.dart';
 
 /// The "All" pill's id.
 const String kAllCollections = 'all';
@@ -108,18 +107,15 @@ class SavedEmpty extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            HoverTap(
+            UiChip(
+              'Browse the feed',
               onTap: () => context.go(Routes.home),
               link: true,
-              builder: (context, hovered) => AnimatedContainer(
-                duration: motion(context, kTransition),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: hovered ? c.bgSubtle : null,
-                  border: Border.all(color: c.border),
-                ),
-                child: Text('Browse the feed', style: UiText.button.copyWith(color: c.text)),
-              ),
+              height: null,
+              hPad: 14,
+              vPad: 8,
+              style: UiText.button,
+              minSize: const Size(48, 48),
             ),
           ],
         ),

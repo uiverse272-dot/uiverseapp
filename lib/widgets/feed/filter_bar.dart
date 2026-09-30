@@ -4,11 +4,10 @@ import '../../data/query.dart';
 import '../../data/taxonomy.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
-import '../../theme/uiverse_text.dart';
-import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
 import '../core/links.dart';
 import 'option_popover.dart';
+import '../core/ui_chip.dart';
 
 /// One popover filter: web param name (`category`, `component`, …), trigger
 /// label and options.
@@ -133,26 +132,8 @@ class _Toggle extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final c = context.ui;
-    return HoverTap(
-      onTap: onTap,
-      toggled: on,
-      label: label,
-      minSize: const Size(0, 48),
-      builder: (context, hovered) => AnimatedContainer(
-        duration: motion(context, kTransition),
-        height: 32,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: on ? c.accent : (hovered ? c.bgSubtle : null),
-          border: Border.all(color: c.border),
-        ),
-        child: Text(label, style: UiText.chip.copyWith(color: on ? c.accentFg : c.text)),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      UiChip(label, onTap: onTap, on: on, toggled: on, semanticLabel: label);
 }
 
 /// A home category chip: label and `?chip=` value (`null` = "For You").
@@ -185,22 +166,14 @@ class ChipRail extends StatelessWidget {
             Builder(builder: (context) {
               final chip = chips[i];
               final on = chip.value != null ? selected == chip.value : selected == null && chip.label == 'For You';
-              return HoverTap(
+              return UiChip(
+                chip.label,
                 onTap: () => onSelect(chip.value == null || chip.value == selected ? null : chip.value),
+                on: on,
                 selected: on,
-                label: chip.label,
-                minSize: const Size(0, 48),
-                builder: (context, hovered) => AnimatedContainer(
-                  duration: motion(context, kTransition),
-                  height: 32,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: on ? c.accent : (hovered ? c.bgSubtle : c.surface),
-                    border: Border.all(color: c.border),
-                  ),
-                  child: Text(chip.label, style: UiText.chip.copyWith(color: on ? c.accentFg : c.text)),
-                ),
+                semanticLabel: chip.label,
+                hPad: 12,
+                restFill: c.surface,
               );
             }),
           ],

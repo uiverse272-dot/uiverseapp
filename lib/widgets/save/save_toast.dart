@@ -13,6 +13,7 @@ import '../../theme/uiverse_text.dart';
 import '../core/ui_icon.dart';
 import 'save_toast_controller.dart';
 import '../core/entrance.dart';
+import '../core/ui_chip.dart';
 
 /// Hosts the save toast above [child] (the app's navigator).
 ///
@@ -145,17 +146,11 @@ class _SaveToastState extends ConsumerState<SaveToast> {
           ),
           if (slug != null) ...[
             const SizedBox(width: 12),
-            HoverTap(
+            UiChip(
+              'Move to…',
               onTap: () => setState(() => _picking = true),
-              minSize: const Size(0, 48),
-              builder: (context, hovered) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: hovered ? c.bgSubtle : null,
-                  border: Border.all(color: c.border),
-                ),
-                child: Text('Move to…', style: UiText.chip.copyWith(color: c.text)),
-              ),
+              height: null,
+              vPad: 6,
             ),
           ],
           const SizedBox(width: 8),

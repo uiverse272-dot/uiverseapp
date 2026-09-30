@@ -8,6 +8,7 @@ import '../core/back_dismiss.dart';
 import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
 import '../core/entrance.dart';
+import '../core/ui_chip.dart';
 
 /// Popover panel width and max height (§4.2).
 const double kPopoverWidth = 224;
@@ -105,32 +106,16 @@ class _OptionPopoverState extends State<OptionPopover> {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.ui;
     final name = _selectedName;
     final on = name != null;
-    final trigger = HoverTap(
+    final trigger = UiChip(
+      name ?? widget.label,
       onTap: _toggle,
-      label: name ?? widget.label,
+      on: on,
       selected: on,
       expanded: _portal.isShowing,
-      minSize: const Size(0, 48),
-      builder: (context, hovered) => AnimatedContainer(
-        duration: motion(context, kTransition),
-        height: 32,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: on ? c.accent : (hovered ? c.bgSubtle : null),
-          border: Border.all(color: c.border),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(name ?? widget.label, style: UiText.chip.copyWith(color: on ? c.accentFg : c.text)),
-            const SizedBox(width: 6),
-            UiIcon(Ui.chevron, size: 13, color: on ? c.accentFg : c.text),
-          ],
-        ),
-      ),
+      semanticLabel: name ?? widget.label,
+      trailing: Ui.chevron,
     );
 
     return BackDismiss(

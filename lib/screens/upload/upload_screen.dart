@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
-import '../../widgets/core/hover_tap.dart';
 import '../../widgets/core/ink_box.dart';
 import '../../widgets/core/ui_icon.dart';
 import '../../widgets/section/section.dart';
 import '../../widgets/core/box_button.dart';
 import '../directory/directory_page.dart';
+import '../../widgets/core/ui_chip.dart';
 
 /// Pre-filled metadata rows the capture pipeline would suggest (web mock).
 const List<(String, List<String>)> kSuggestedMetadata = [
@@ -217,7 +217,7 @@ class MetadataRow extends StatelessWidget {
       spacing: 8,
       // Chips lay out 48 tall (hit area) around a ~25 visual.
       runSpacing: 0,
-      children: [for (final String chip in chips) RemovableChip(chip, onRemove: () => onRemove(chip))],
+      children: [for (final String chip in chips) RemovableChip(chip, onRemove: () => onRemove(chip), gap: 6, mutedIcon: true)],
     );
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -234,38 +234,6 @@ class MetadataRow extends StatelessWidget {
                 Expanded(child: chipWrap),
               ],
             ),
-    );
-  }
-}
-
-/// Chip with a trailing ✕ that removes it: border, bg-subtle, 8×4, 12px.
-class RemovableChip extends StatelessWidget {
-  const RemovableChip(this.label, {super.key, required this.onRemove});
-
-  final String label;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.ui;
-    return HoverTap(
-      onTap: onRemove,
-      label: 'Remove $label',
-      builder: (context, hovered) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: c.bgSubtle,
-          border: Border.all(color: hovered ? c.borderStrong : c.border),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label, style: UiText.small.copyWith(color: c.text)),
-            const SizedBox(width: 6),
-            UiIcon(Ui.close, size: 11, color: c.text2),
-          ],
-        ),
-      ),
     );
   }
 }
