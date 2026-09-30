@@ -58,7 +58,7 @@ class SearchScreen extends StatelessWidget {
   }
 
   List<Widget> _results(BuildContext context, String q, String? kind) {
-    final SearchResult r = searchItems(q, Filters(kind: kind));
+    final SearchResult r = searchCatalog(q, Filters(kind: kind));
     return <Widget>[
       StickyBar(
         child: _SearchBar(q: q, kind: kind, terms: r.terms, residual: r.residual),

@@ -90,7 +90,12 @@ class SavesState {
 
   int get count => saves.length;
 
-  bool isSaved(String slug) => saves.any((s) => s.slug == slug);
+  // Saved slugs per state, built on first use: every mounted SaveButton asks
+  // [isSaved] on each change. An Expando keeps the constructor const.
+  static final Expando<Set<String>> _slugSets = Expando<Set<String>>();
+
+  bool isSaved(String slug) =>
+      (_slugSets[this] ??= {for (final s in saves) s.slug}).contains(slug);
 
   /// Saves in [collectionId], newest first.
   List<SaveEntry> savesIn(String collectionId) =>

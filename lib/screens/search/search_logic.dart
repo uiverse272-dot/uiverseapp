@@ -18,13 +18,16 @@ const List<String> kSearchSuggestions = <String>[
 typedef KindTab = ({String label, String? kind, int count});
 
 /// All / Designs / Components with the result count of [q] for each.
+///
+/// Three searches, not one split by kind: the free-text residual only narrows
+/// a result set it still matches, so a kind-filtered search can differ.
 List<KindTab> kindTabs(String q) => <KindTab>[
-      (label: 'All', kind: null, count: searchItems(q).results.length),
-      (label: 'Designs', kind: 'screen', count: searchItems(q, const Filters(kind: 'screen')).results.length),
+      (label: 'All', kind: null, count: searchCatalog(q).results.length),
+      (label: 'Designs', kind: 'screen', count: searchCatalog(q, const Filters(kind: 'screen')).results.length),
       (
         label: 'Components',
         kind: 'component',
-        count: searchItems(q, const Filters(kind: 'component')).results.length,
+        count: searchCatalog(q, const Filters(kind: 'component')).results.length,
       ),
     ];
 

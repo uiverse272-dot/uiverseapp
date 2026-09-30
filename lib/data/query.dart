@@ -438,3 +438,30 @@ List<Item> mixFeed(List<Item> items, {int every = 4}) {
   }
   return out..addAll(comps.skip(c));
 }
+
+// ---------------------------------------------------------------------------
+// Memoised catalog queries. The catalog is immutable, so results are cached
+// and the same list instance is returned for equal inputs — screens rebuilt by
+// the router (e.g. under a detail overlay) then do no work and hand feeds an
+// identical list.
+// ---------------------------------------------------------------------------
+
+const int _kQueryCacheMax = 48;
+
+final Map<Filters, List<Item>> _filterCache = <Filters, List<Item>>{};
+final Map<(String, Filters), SearchResult> _searchCache = <(String, Filters), SearchResult>{};
+
+V _memo<K, V>(Map<K, V> cache, K key, V Function() compute) {
+  final V? hit = cache[key];
+  if (hit != null) return hit;
+  if (cache.length >= _kQueryCacheMax) cache.remove(cache.keys.first);
+  return cache[key] = compute();
+}
+
+/// [applyFilters] over the whole catalog, cached per [f].
+List<Item> filterCatalog(Filters f) =>
+    _memo(_filterCache, f, () => List<Item>.unmodifiable(applyFilters(kItems, f)));
+
+/// [searchItems], cached per query and extra filters.
+SearchResult searchCatalog(String q, [Filters extra = const Filters()]) =>
+    _memo(_searchCache, (q, extra), () => searchItems(q, extra));

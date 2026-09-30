@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../data/catalog.dart';
 import '../../data/query.dart';
 import '../../data/taxonomy.dart';
 import '../../widgets/feed/feed.dart';
@@ -126,7 +125,7 @@ class ThreeDFeedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = applyFilters(kItems, const Filters(threed: 'true'));
+    final items = filterCatalog(const Filters(threed: 'true'));
     return CustomScrollView(
       slivers: [
         const SliverShell(

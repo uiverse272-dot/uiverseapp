@@ -60,6 +60,19 @@ class _DetailScreenState extends State<DetailScreen> {
     _reveal(_frameKey);
   }
 
+  // similarTo scores the whole catalog; cache it per slug so tab and device
+  // switches don't redo it.
+  String? _similarSlug;
+  List<Item> _similar = const <Item>[];
+
+  List<Item> _similarFor(Item item) {
+    if (_similarSlug != item.slug) {
+      _similarSlug = item.slug;
+      _similar = similarTo(item, 12);
+    }
+    return _similar;
+  }
+
   @override
   void didUpdateWidget(DetailScreen old) {
     super.didUpdateWidget(old);
@@ -75,7 +88,7 @@ class _DetailScreenState extends State<DetailScreen> {
     if (item == null) return const _NotFound();
 
     final device = _device ?? MockScreen.nativeViewport(item);
-    final similar = similarTo(item, 12);
+    final similar = _similarFor(item);
     final width = MediaQuery.sizeOf(context).width;
     final overlay = DetailPresentation.of(context) == DetailPresentation.overlay;
     final pad = width >= Bp.md ? 20.0 : 16.0;

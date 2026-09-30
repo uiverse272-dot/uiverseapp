@@ -14,6 +14,20 @@ import '../../widgets/feed/url_query.dart';
 import '../../widgets/section/section.dart';
 import 'home_chips.dart';
 
+// The catalog is immutable, so the home lists are computed once and reused
+// across rebuilds (the router rebuilds Home under every detail overlay).
+final List<Item> _trending =
+    sortItems(kItems.where((Item i) => i.kind == Kind.screen).toList(), 'trending');
+final List<Item> _popular = List<Item>.unmodifiable(_trending.take(6));
+final Item _pick =
+    _trending.firstWhere((Item i) => i.device == Device.desktop, orElse: () => _trending.first);
+final Map<String?, List<Item>> _chipFeeds = <String?, List<Item>>{};
+
+List<Item> _chipFeed(HomeChip chip) {
+  final List<Item> filtered = filterCatalog(chip.filters);
+  return chip.value == 'components' ? filtered : List<Item>.unmodifiable(mixFeed(filtered));
+}
+
 /// `/` — discovery feed (§12): Categories + chip rail, "Popular this week"
 /// (For You only), the chip's feed, and Pick of the week floating
 /// bottom-right. [chip] is the `?chip=` query value.
@@ -25,12 +39,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeChip active = homeChipFor(chip);
-    final List<Item> filtered = applyFilters(kItems, active.filters);
-    final List<Item> items = active.value == 'components' ? filtered : mixFeed(filtered);
-    final List<Item> trending =
-        sortItems(kItems.where((Item i) => i.kind == Kind.screen).toList(), 'trending');
-    final List<Item> popular = trending.take(6).toList();
-    final Item pick = trending.firstWhere((Item i) => i.device == Device.desktop, orElse: () => trending.first);
+    final List<Item> items = _chipFeeds[active.value] ??= _chipFeed(active);
+    final List<Item> popular = _popular;
+    final Item pick = _pick;
     final bool browsing = active.value == null;
     final double gutter = pageGutter(context);
     final bool wide = MediaQuery.sizeOf(context).width >= Bp.md;

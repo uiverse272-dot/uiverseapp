@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../data/catalog.dart';
 import '../../data/models.dart';
 import '../../data/query.dart';
 import '../../theme/uiverse_colors.dart';
@@ -34,7 +33,7 @@ class FeedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.ui;
     final Filters url = Filters.fromParams(query);
-    final List<Item> items = applyFilters(kItems, mergeFilters(base, url));
+    final List<Item> items = filterCatalog(mergeFilters(base, url));
     return CustomScrollView(
       slivers: [
         SliverShell(

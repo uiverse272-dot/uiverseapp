@@ -64,6 +64,9 @@ List<ExploreTile> _tiles(
         ),
     ];
 
+/// [exploreGroups], computed once: the catalog never changes.
+final List<ExploreGroup> kExploreGroups = exploreGroups();
+
 /// The six Explore groups, empty ones removed.
 List<ExploreGroup> exploreGroups() {
   final List<ExploreGroup> groups = <ExploreGroup>[
