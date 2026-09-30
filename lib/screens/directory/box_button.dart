@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../theme/motion.dart';
@@ -6,7 +8,8 @@ import '../../theme/uiverse_text.dart';
 import '../../widgets/core/hover_tap.dart';
 
 /// Square text button: 1px border with `bg-subtle` hover, or an [accent]
-/// fill (primary CTA). Fills the width it is given.
+/// fill (primary CTA). Fills the width it is given; lays out at least 48
+/// tall with the box centred.
 class BoxButton extends StatelessWidget {
   const BoxButton(
     this.label, {
@@ -31,7 +34,8 @@ class BoxButton extends StatelessWidget {
     return HoverTap(
       onTap: onTap,
       label: label,
-      minSize: Size(0, height),
+      // The box keeps [height]; the hit area is at least 48 (§14).
+      minSize: Size(0, math.max(48, height)),
       builder: (context, hovered) => AnimatedContainer(
         duration: motion(context, kTransition),
         height: height,

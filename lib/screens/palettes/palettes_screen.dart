@@ -113,7 +113,8 @@ class PaletteCard extends StatelessWidget {
                       child: _HexGrid(swatches: swatches),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  // Copy boxes lay out 48 tall around a 32 box: 4 + 8 keeps the 12 gap.
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Expanded(child: _CopyBox(label: 'CSS vars', value: cssVariables(swatches))),
@@ -131,7 +132,8 @@ class PaletteCard extends StatelessWidget {
   }
 }
 
-/// Two-column list of 12px swatches with copyable hex values.
+/// Two-column list of 12px swatches with copyable hex values. Rows are 48
+/// tall so each CopyValue keeps its full hit area (§14).
 class _HexGrid extends StatelessWidget {
   const _HexGrid({required this.swatches});
 
@@ -141,7 +143,7 @@ class _HexGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.ui;
     Widget cell(ColorRole s) => SizedBox(
-          height: 30,
+          height: 48,
           child: Row(
             children: [
               Container(
@@ -169,7 +171,8 @@ class _HexGrid extends StatelessWidget {
   }
 }
 
-/// Full-width bordered copy button ("CSS vars", "Tailwind").
+/// Full-width bordered copy button ("CSS vars", "Tailwind"): a 32-tall box
+/// inside a 48-tall hit area.
 class _CopyBox extends StatelessWidget {
   const _CopyBox({required this.label, required this.value});
 
@@ -178,11 +181,21 @@ class _CopyBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 32,
-      decoration: BoxDecoration(border: Border.all(color: context.ui.border)),
-      alignment: Alignment.center,
-      child: CopyValue(value, label: label),
+    return SizedBox(
+      height: 48,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned.fill(
+            top: 8,
+            bottom: 8,
+            child: DecoratedBox(
+              decoration: BoxDecoration(border: Border.all(color: context.ui.border)),
+            ),
+          ),
+          CopyValue(value, label: label),
+        ],
+      ),
     );
   }
 }

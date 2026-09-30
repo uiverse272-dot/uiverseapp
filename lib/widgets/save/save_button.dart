@@ -13,10 +13,20 @@ enum SaveButtonVariant { icon, solid, inline }
 
 /// Bookmark toggle (§10.3). Toggling always shows the save toast.
 class SaveButton extends ConsumerWidget {
-  const SaveButton(this.slug, {super.key, this.variant = SaveButtonVariant.icon, this.expand = false});
+  const SaveButton(
+    this.slug, {
+    super.key,
+    this.variant = SaveButtonVariant.icon,
+    this.expand = false,
+    this.iconAlignment = Alignment.center,
+  });
 
   final String slug;
   final SaveButtonVariant variant;
+
+  /// Icon variant only: where the 28px icon sits inside its 48×48 hit area
+  /// (e.g. [Alignment.bottomRight] to sit flush in a card corner, §10.2).
+  final AlignmentGeometry iconAlignment;
 
   /// Solid variant only: fill the available width (detail rail, §10.9).
   final bool expand;
@@ -33,17 +43,20 @@ class SaveButton extends ConsumerWidget {
           onTap: toggle,
           label: saved ? 'Remove from saves' : 'Save',
           toggled: saved,
-          builder: (context, hovered) => SizedBox.square(
-            dimension: 28,
-            child: Center(
-              child: UiIcon(mark, size: 17, color: saved || hovered ? c.accent : c.text),
-            ),
-          ),
+          builder: (context, hovered) {
+            final icon = SizedBox.square(
+              dimension: 28,
+              child: Center(
+                child: UiIcon(mark, size: 17, color: saved || hovered ? c.accent : c.text),
+              ),
+            );
+            if (iconAlignment == Alignment.center) return icon;
+            return SizedBox.square(dimension: 48, child: Align(alignment: iconAlignment, child: icon));
+          },
         ),
       SaveButtonVariant.solid => HoverTap(
           onTap: toggle,
           toggled: saved,
-          minSize: const Size(48, 44),
           builder: (context, hovered) {
             final fg = saved ? c.text : c.accentFg;
             final bg = saved ? (hovered ? c.bgSubtle : c.surface) : c.accent;

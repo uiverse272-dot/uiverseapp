@@ -38,7 +38,7 @@ class AppShell extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Navbar(readingAs: readingAs ?? readingAsChips),
+                  Navbar(readingAs: readingAs ?? readingAsChips, location: location),
                   Expanded(
                     child: MediaQuery.removePadding(
                       context: context,

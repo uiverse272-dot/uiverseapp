@@ -215,7 +215,8 @@ class MetadataRow extends StatelessWidget {
     final Widget labelText = Text(label, style: UiText.chip.copyWith(color: c.text3));
     final Widget chipWrap = Wrap(
       spacing: 8,
-      runSpacing: 8,
+      // Chips lay out 48 tall (hit area) around a ~25 visual.
+      runSpacing: 0,
       children: [for (final String chip in chips) RemovableChip(chip, onRemove: () => onRemove(chip))],
     );
     return Container(
@@ -250,7 +251,6 @@ class RemovableChip extends StatelessWidget {
     return HoverTap(
       onTap: onRemove,
       label: 'Remove $label',
-      minSize: const Size(0, 32),
       builder: (context, hovered) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(

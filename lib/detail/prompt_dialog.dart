@@ -375,30 +375,28 @@ class _Options extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (final (label, on, next) in includes)
-                Semantics(
+                HoverTap(
+                  onTap: () => onChanged(next(!on)),
                   checked: on,
-                  child: HoverTap(
-                    onTap: () => onChanged(next(!on)),
-                    builder: (context, hovered) => Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                      color: hovered ? c.bgSubtle : null,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 16,
-                            height: 16,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: on ? c.accent : null,
-                              border: Border.all(color: on ? c.border : c.borderStrong),
-                            ),
-                            child: on ? UiIcon(Ui.check, size: 11, color: c.accentFg) : null,
+                  builder: (context, hovered) => Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    color: hovered ? c.bgSubtle : null,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 16,
+                          height: 16,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: on ? c.accent : null,
+                            border: Border.all(color: on ? c.border : c.borderStrong),
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(label, style: UiText.chip.copyWith(color: c.text))),
-                        ],
-                      ),
+                          child: on ? UiIcon(Ui.check, size: 11, color: c.accentFg) : null,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(label, style: UiText.chip.copyWith(color: c.text))),
+                      ],
                     ),
                   ),
                 ),

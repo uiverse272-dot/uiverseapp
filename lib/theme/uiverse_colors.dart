@@ -34,7 +34,7 @@ class UiverseColors extends ThemeExtension<UiverseColors> {
     rule: Color(0x381C1B18), // 22% of #1c1b18
     text: Color(0xFF1C1B18),
     text2: Color(0xFF4D4A42),
-    text3: Color(0xFF7C7667),
+    text3: Color(0xFF6F6A5C), // darkened from #7c7667 for AA (§14)
     accent: Color(0xFFF47A2C),
     accentFg: Color(0xFF1C1B18),
     signal: Color(0xFFF8DC3D),

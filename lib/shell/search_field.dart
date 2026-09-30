@@ -8,6 +8,7 @@ import '../router/routes.dart';
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
+import '../widgets/core/back_dismiss.dart';
 import '../widgets/core/ui_icon.dart';
 import '../widgets/core/hover_tap.dart';
 
@@ -120,6 +121,14 @@ class _SearchFieldState extends State<SearchField> {
     setState(() {});
   }
 
+  /// Esc / back: close the dropdown and leave the field.
+  void _dismiss() {
+    _blurTimer?.cancel();
+    _focus.unfocus();
+    _focused = false;
+    _sync();
+  }
+
   void _submit() {
     final q = _q.text.trim();
     if (q.isEmpty) return;
@@ -142,35 +151,41 @@ class _SearchFieldState extends State<SearchField> {
     final fg = big ? c.text : c.onSignal;
     final showKbd = !big && MediaQuery.sizeOf(context).width >= 1024;
 
-    final field = Container(
-      height: big ? 52 : 40,
+    final box = BoxDecoration(
+      color: big ? c.surface : null,
+      border: Border.all(color: big ? c.border : c.onSignal),
+      boxShadow: _focus.hasFocus ? [hardShadow(3, fg)] : null,
+    );
+    final row = Padding(
       padding: EdgeInsets.symmetric(horizontal: big ? 16 : 12),
-      decoration: BoxDecoration(
-        color: big ? c.surface : null,
-        border: Border.all(color: big ? c.border : c.onSignal),
-        boxShadow: _focus.hasFocus ? [hardShadow(3, fg)] : null,
-      ),
       child: Row(
         children: [
           UiIcon(Ui.search, size: big ? 19 : 18, color: fg),
           const SizedBox(width: 10),
           Expanded(
-            child: TextField(
-              controller: _q,
-              focusNode: _focus,
-              groupId: _tapGroup,
-              onTapOutside: (_) => _focus.unfocus(),
-              onSubmitted: (_) => _submit(),
-              textInputAction: TextInputAction.search,
-              style: UiText.mono(big ? 15 : 13, color: fg),
-              cursorColor: fg,
-              decoration: InputDecoration.collapsed(
-                hintText: big
-                    ? 'Try: ${kSearchExamples[_example]}'
-                    : 'Site, component, style, or industry',
-                hintStyle: UiText.mono(
-                  big ? 15 : 13,
-                  color: big ? c.text3 : c.onSignal.withValues(alpha: 0.7),
+            // The compact field sits on the signal-yellow cell, where the
+            // signal selection colour would be invisible; tint with ink instead.
+            child: TextSelectionTheme(
+              data: big
+                  ? TextSelectionTheme.of(context)
+                  : TextSelectionTheme.of(context).copyWith(selectionColor: c.onSignal.withValues(alpha: 0.25)),
+              child: TextField(
+                controller: _q,
+                focusNode: _focus,
+                groupId: _tapGroup,
+                onTapOutside: (_) => _focus.unfocus(),
+                onSubmitted: (_) => _submit(),
+                textInputAction: TextInputAction.search,
+                style: UiText.mono(big ? 15 : 13, color: fg),
+                cursorColor: fg,
+                decoration: InputDecoration.collapsed(
+                  hintText: big
+                      ? 'Try: ${kSearchExamples[_example]}'
+                      : 'Site, component, style, or industry',
+                  hintStyle: UiText.mono(
+                    big ? 15 : 13,
+                    color: big ? c.text3 : c.onSignal.withValues(alpha: 0.7),
+                  ),
                 ),
               ),
             ),
@@ -187,15 +202,34 @@ class _SearchFieldState extends State<SearchField> {
       ),
     );
 
+    // The compact box is 40 tall but lays out 48 so the field's tap target
+    // meets 48dp (§14); the box is drawn centred in it.
+    final Widget field = big
+        ? Container(height: 52, decoration: box, child: row)
+        : SizedBox(
+            height: 48,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(top: 4, bottom: 4, child: DecoratedBox(decoration: box)),
+                row,
+              ],
+            ),
+          );
+
     return LayoutBuilder(
       builder: (context, box) {
         _width = box.maxWidth;
-        return CompositedTransformTarget(
-          link: _link,
-          child: OverlayPortal(
-            controller: _portal,
-            overlayChildBuilder: _dropdown,
-            child: field,
+        return BackDismiss(
+          active: _portal.isShowing,
+          onDismiss: _dismiss,
+          child: CompositedTransformTarget(
+            link: _link,
+            child: OverlayPortal(
+              controller: _portal,
+              overlayChildBuilder: _dropdown,
+              child: field,
+            ),
           ),
         );
       },
@@ -212,7 +246,8 @@ class _SearchFieldState extends State<SearchField> {
         link: _link,
         showWhenUnlinked: false,
         targetAnchor: Alignment.bottomLeft,
-        offset: const Offset(0, 6),
+        // 6 below the visible box (the compact box is inset 4 in its 48 layout).
+        offset: Offset(0, widget.big ? 6 : 2),
         child: TapRegion(
           groupId: _tapGroup,
           child: SizedBox(
@@ -237,11 +272,11 @@ class _SearchFieldState extends State<SearchField> {
                       if (chips.isNotEmpty) _readingAs(context, chips),
                       HoverTap(
                         onTap: _submit,
-                        minSize: const Size(double.infinity, 44),
+                        minSize: const Size(double.infinity, 48),
                         builder: (context, hovered) => Container(
                           color: hovered ? c.bgSubtle : null,
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          constraints: const BoxConstraints(minHeight: 44),
+                          constraints: const BoxConstraints(minHeight: 48),
                           alignment: Alignment.centerLeft,
                           child: Row(
                             children: [

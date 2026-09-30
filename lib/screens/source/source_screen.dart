@@ -151,7 +151,6 @@ class _Tag extends StatelessWidget {
       onTap: onTap,
       link: true,
       label: text,
-      minSize: const Size(0, 44),
       builder: (context, hovered) => box(hovered),
     );
   }

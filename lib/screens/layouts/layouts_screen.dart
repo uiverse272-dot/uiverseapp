@@ -128,7 +128,8 @@ class LayoutCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          // 32-tall buttons sit in 48 hit areas; 4 + 8 keeps the 12 gap.
+          const SizedBox(height: 4),
           Row(
             children: [
               Expanded(child: BoxButton('Duplicate', onTap: () {}, height: 32, style: UiText.chip)),

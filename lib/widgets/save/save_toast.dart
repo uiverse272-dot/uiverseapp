@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:uiverse/widgets/core/hover_tap.dart';
+import '../core/back_dismiss.dart';
 import '../../state/saves.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
@@ -110,7 +111,12 @@ class _SaveToastState extends ConsumerState<SaveToast> {
         ),
         child: DefaultTextStyle(
           style: UiText.body.copyWith(color: c.text),
-          child: _picking ? _picker(context) : _result(context),
+          // Esc / back close the "Move to collection" picker (§14).
+          child: BackDismiss(
+            active: _picking,
+            onDismiss: () => setState(() => _picking = false),
+            child: _picking ? _picker(context) : _result(context),
+          ),
         ),
       ),
     );
@@ -196,12 +202,12 @@ class _SaveToastState extends ConsumerState<SaveToast> {
               for (final col in collections)
                 HoverTap(
                   onTap: () => ctl.moveTo(slug, col.id),
-                  minSize: const Size(double.infinity, 44),
+                  minSize: const Size(double.infinity, 48),
                   builder: (context, hovered) => Container(
                     color: hovered ? c.bgSubtle : null,
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    constraints: const BoxConstraints(minHeight: 44),
+                    constraints: const BoxConstraints(minHeight: 48),
                     child: Text(col.name, style: UiText.body.copyWith(color: c.text)),
                   ),
                 ),
