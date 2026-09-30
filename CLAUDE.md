@@ -17,7 +17,7 @@ Where doc and web code disagree: **code wins for data**, **doc wins for visuals*
 - `lib/theme/uiverse_text.dart` — `UiText.pageTitle/.sectionHead/.body/.chip/.caption/.meta/...`, `UiText.mono(size, bold:, height:, track:)`, `UiText.tabular`. Styles have no colour: `.copyWith(color: context.ui.text2)`.
 - `lib/theme/motion.dart` — `kDur kEase kTransition kFadeUp kFadeIn kSheet`, `Lift.l1..l5`, `hardShadow(d, color)`, `motion(context, d)` (reduced-motion aware), `Bp.sm/md/lg/xl`, `bpColumns(width, base:, sm:, …)`, `context.isWide`, `kLiftOffset`.
 - `lib/theme/uiverse_theme.dart` — `uiverseTheme(Brightness)`.
-- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `LogoMark(size:)`, `BoxButton`, `LinkInk` / `TextLink` / `InlineLinkText` (`links.dart`), `SheetIn` / `FadeUp` / `FadeIn` (`entrance.dart`), `bareInput`, `HoverTap` (hover fill, 2px accent focus ring, 48dp min hit, semantics, no ink — the default tappable).
+- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `LogoMark(size:)`, `BoxButton`, `UiChip` / `RemovableChip` (`ui_chip.dart` — use these for any bordered chip or small button), `LinkInk` / `LinkInk.quiet` / `InlineLinkText` (`links.dart`), `RowGrid` / `SliverRowGrid` (`row_grid.dart`), `SheetIn` / `FadeUp` / `FadeIn` (`entrance.dart`), `bareInput`, `HoverTap` (hover fill, 2px accent focus ring, 48dp min hit, semantics, no ink — the default tappable).
 - `lib/data/models.dart` — `Item, Source, Palette, Block, Crop, ArchetypeDef`, enums `Archetype(.slug)`, `Kind`, `Device`, `Viewport(.w/.h/.label/.pick)`, `Tier`.
 
 ## Phase 1 APIs (read the files for exact signatures)
@@ -26,6 +26,8 @@ Where doc and web code disagree: **code wins for data**, **doc wins for visuals*
 - **Save widgets** `lib/widgets/save/`: `SaveButton(slug, variant: SaveButtonVariant.icon|solid|inline)`, `saveToastProvider`.
 - **Shell** `lib/shell/`: `AppShell`, `Navbar`, `Rail`, `BottomNav`, `SearchField.compact()/.big()`, `ThemeToggle`.
 - **Router** `lib/router/`: `Routes` path helpers (`Routes.screen(slug)`, `searchFor(q)`, `facets(base, list)`…), `AppRoute` enum, `facetsOf(state)`, `openDetail(context, item)` / `openDetailSlug`. Route→screen table = `buildRoute` switch in `routes.dart` — **only the orchestrator edits it**; agents export screen widgets and state the constructor to wire. Detail screens must not scroll themselves (the presentation wraps them in a scroll view); `DetailPresentation.of(context)` tells overlay vs page.
+- **Detail** `lib/detail/`: `detail_screen.dart` (screen + similar section), `detail_media.dart` (`DetailMedia`), `detail_rail.dart` (`DetailRail`), `detail_tabs.dart`, `breakdown.dart`, `prompt_dialog.dart`.
+- **Mock files**: `primitives.dart` is the entry point and re-exports `ctx.dart` (`MockCtx`, `noise`), `art.dart` (paint layers), `box.dart` (`B`), `bars.dart`, `flex.dart`.
 - **Mock** `lib/mock/mock_screen.dart`: `MockScreen(item:, full: false, viewport:)` (feeds: fixed `item.aspect` crop; detail: `full: true` or a `viewport`, content height), `MockScreen.nativeViewport(item)`. Gallery at `/dev/mock`.
 
 ## Rules
