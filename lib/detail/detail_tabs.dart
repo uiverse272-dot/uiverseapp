@@ -16,6 +16,7 @@ import '../widgets/core/hover_tap.dart';
 import '../widgets/core/lift_on_press.dart';
 import '../widgets/core/ui_icon.dart';
 import 'parts.dart';
+import '../widgets/core/links.dart';
 
 /// The detail tabs, in order (§10.9).
 enum DetailTab {

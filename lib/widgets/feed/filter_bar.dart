@@ -7,7 +7,7 @@ import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
 import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
-import '../section/link_ink.dart';
+import '../core/links.dart';
 import 'option_popover.dart';
 
 /// One popover filter: web param name (`category`, `component`, …), trigger

@@ -12,6 +12,7 @@ import '../widgets/copy_value.dart';
 import '../widgets/core/hover_tap.dart';
 import '../widgets/core/ink_box.dart';
 import 'parts.dart';
+import '../widgets/core/links.dart';
 
 /// `:root`-style CSS custom properties for [roles] (web "Copy as CSS variables").
 String cssVariables(List<ColorRole> roles) =>

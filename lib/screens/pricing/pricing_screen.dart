@@ -6,7 +6,7 @@ import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
 import '../../widgets/core/ui_icon.dart';
-import '../directory/box_button.dart';
+import '../../widgets/core/box_button.dart';
 import '../directory/directory_page.dart';
 
 /// A plan card's content.

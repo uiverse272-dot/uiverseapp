@@ -10,7 +10,7 @@ import '../../theme/uiverse_text.dart';
 import '../../widgets/core/hover_tap.dart';
 import '../../widgets/core/ink_box.dart';
 import '../../widgets/feed/item_aspect.dart';
-import '../directory/box_button.dart';
+import '../../widgets/core/box_button.dart';
 import '../directory/directory_page.dart';
 
 /// `/layouts` (§12): section skeletons derived from real captures.

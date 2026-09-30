@@ -1,14 +1,12 @@
 /// Small building blocks shared by the detail view, its tabs and the Breakdown.
 library;
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
-import '../widgets/core/hover_tap.dart';
 
 /// Navigates to [path], replacing the current location (closes an overlay).
 /// No-op outside a router (widget tests).
@@ -104,81 +102,6 @@ class SplitRow extends StatelessWidget {
         SizedBox(width: gap),
         Expanded(flex: b, child: second),
       ],
-    );
-  }
-}
-
-/// A text link: text-2, hover → text + underline (e.g. "Save as a layout →").
-class TextLink extends StatelessWidget {
-  const TextLink(this.text, {super.key, required this.onTap, this.style});
-
-  final String text;
-  final VoidCallback onTap;
-  final TextStyle? style;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.ui;
-    return HoverTap(
-      onTap: onTap,
-      link: true,
-      builder: (context, hovered) => Text(
-        text,
-        style: (style ?? UiText.chip).copyWith(
-          color: hovered ? c.text : c.text2,
-          decoration: hovered ? TextDecoration.underline : null,
-        ),
-      ),
-    );
-  }
-}
-
-/// A paragraph with one underlined inline link: `before` **link** `after`.
-class InlineLinkText extends StatefulWidget {
-  const InlineLinkText({
-    super.key,
-    required this.before,
-    required this.link,
-    required this.after,
-    required this.onTap,
-    required this.style,
-  });
-
-  final String before;
-  final String link;
-  final String after;
-  final VoidCallback onTap;
-  final TextStyle style;
-
-  @override
-  State<InlineLinkText> createState() => _InlineLinkTextState();
-}
-
-class _InlineLinkTextState extends State<InlineLinkText> {
-  late final TapGestureRecognizer _tap = TapGestureRecognizer()..onTap = () => widget.onTap();
-
-  @override
-  void dispose() {
-    _tap.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        style: widget.style,
-        children: [
-          TextSpan(text: widget.before),
-          TextSpan(
-            text: widget.link,
-            recognizer: _tap,
-            mouseCursor: SystemMouseCursors.click,
-            style: const TextStyle(decoration: TextDecoration.underline),
-          ),
-          TextSpan(text: widget.after),
-        ],
-      ),
     );
   }
 }

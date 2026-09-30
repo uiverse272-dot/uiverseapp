@@ -18,6 +18,7 @@ import 'breakdown.dart';
 import 'detail_tabs.dart';
 import 'parts.dart';
 import 'prompt_dialog.dart';
+import '../widgets/core/links.dart';
 
 export 'detail_tabs.dart' show DetailCardBuilder;
 

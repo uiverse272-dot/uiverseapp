@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
-import 'link_ink.dart';
+import '../core/links.dart';
 
-export 'link_ink.dart';
+export '../core/links.dart';
 
 /// Content max width for wide feeds (§4.2).
 const double kShellWide = 2100;

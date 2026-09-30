@@ -19,7 +19,7 @@ import '../core/back_dismiss.dart';
 import '../core/hover_tap.dart';
 import '../core/ui_icon.dart';
 import '../save/save_button.dart';
-import '../section/link_ink.dart';
+import '../core/links.dart';
 import 'item_aspect.dart';
 import '../core/entrance.dart';
 

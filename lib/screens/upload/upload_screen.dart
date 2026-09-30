@@ -7,7 +7,7 @@ import '../../widgets/core/hover_tap.dart';
 import '../../widgets/core/ink_box.dart';
 import '../../widgets/core/ui_icon.dart';
 import '../../widgets/section/section.dart';
-import '../directory/box_button.dart';
+import '../../widgets/core/box_button.dart';
 import '../directory/directory_page.dart';
 
 /// Pre-filled metadata rows the capture pipeline would suggest (web mock).

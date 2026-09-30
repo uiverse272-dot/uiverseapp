@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
-import '../../widgets/core/hover_tap.dart';
+import 'hover_tap.dart';
 
 /// Square text button: 1px border with `bg-subtle` hover, or an [accent]
 /// fill (primary CTA). Fills the width it is given; lays out at least 48
