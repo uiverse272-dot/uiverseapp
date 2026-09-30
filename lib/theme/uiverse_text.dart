@@ -41,7 +41,6 @@ abstract final class UiText {
     fontWeight: FontWeight.w400,
     height: 1.375,
     letterSpacing: -0.01 * 13.5,
-    fontFeatures: tabular,
   );
   static final TextStyle button = mono(13.5);
   static final TextStyle body = mono(13);
