@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'router/router.dart';
 import 'state/theme.dart';
+import 'theme/uiverse_colors.dart';
 import 'theme/uiverse_theme.dart';
 import 'widgets/core/back_dismiss.dart';
 import 'widgets/save/save_toast.dart';
@@ -23,10 +25,31 @@ class UiverseApp extends ConsumerWidget {
       routerConfig: router,
       // Esc goes through BackDismissRoot (same path as Android back).
       shortcuts: kEscapeShortcutOverride,
-      builder: (context, child) => BackDismissRoot(
-        backButtonDispatcher: router.backButtonDispatcher,
-        child: SaveToastLayer(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: systemBars(context),
+        child: BackDismissRoot(
+          backButtonDispatcher: router.backButtonDispatcher,
+          child: SaveToastLayer(child: child ?? const SizedBox.shrink()),
+        ),
       ),
     );
   }
+}
+
+/// Status/navigation bars painted in `bg` with icons in the opposite brightness,
+/// so they follow the in-app theme rather than the system one.
+SystemUiOverlayStyle systemBars(BuildContext context) {
+  final c = context.ui;
+  final dark = Theme.of(context).brightness == Brightness.dark;
+  final icons = dark ? Brightness.light : Brightness.dark;
+  return SystemUiOverlayStyle(
+    statusBarColor: c.bg,
+    statusBarIconBrightness: icons,
+    statusBarBrightness: dark ? Brightness.dark : Brightness.light, // iOS
+    systemNavigationBarColor: c.bg,
+    systemNavigationBarIconBrightness: icons,
+    systemNavigationBarDividerColor: c.bg,
+    systemStatusBarContrastEnforced: false,
+    systemNavigationBarContrastEnforced: false,
+  );
 }
