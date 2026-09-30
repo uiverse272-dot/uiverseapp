@@ -69,7 +69,7 @@ flutter:
           weight: 700
     - family: Lexend
       fonts:
-        - asset: assets/fonts/Lexend.ttf
+        - asset: assets/fonts/Lexend-Regular.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

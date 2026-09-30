@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -69,7 +70,7 @@ GoRouter createRouter({String initialLocation = Routes.home}) {
           for (final r in AppRoute.values)
             if (r.hasFacets)
               facetFeed(r)
-            else if (!r.isDetail)
+            else if (!r.isDetail && (kDebugMode || r != AppRoute.devMock))
               screen(r),
         ],
       ),

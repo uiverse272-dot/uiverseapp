@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/models.dart';
 import '../detail/detail_screen.dart';
 import '../dev/mock_gallery.dart';
+import 'not_found_page.dart';
 import '../screens/creators/creators_screen.dart';
 import '../screens/explore/explore_screen.dart';
 import '../screens/feeds/feed_screen.dart';
@@ -115,5 +117,6 @@ Widget buildRoute(AppRoute route, BuildContext context, GoRouterState state) => 
       AppRoute.upload => const UploadScreen(),
       AppRoute.user => ProfileScreen(handle: state.pathParameters['handle']!),
       AppRoute.legal => LegalScreen(doc: state.pathParameters['doc']!),
-      AppRoute.devMock => const MockGalleryPage(),
+      // Debug builds only: the constant lets release tree-shake the gallery.
+      AppRoute.devMock => kDebugMode ? const MockGalleryPage() : const NotFoundPage(),
     };

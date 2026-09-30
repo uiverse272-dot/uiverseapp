@@ -7,8 +7,9 @@ Web source (read-only reference, port from here): `C:\Users\LENOVO\Documents\Oth
 Where doc and web code disagree: **code wins for data**, **doc wins for visuals**.
 
 ## Stack
-- Flutter 3.47, Dart 3.13. Riverpod 3 (`flutter_riverpod`), `go_router`, `shared_preferences`, `flutter_svg`.
-- Fonts bundled: `SpaceMono` (400/700, default), `Lexend` (card titles only). No `google_fonts`.
+- Flutter 3.47, Dart 3.13. Riverpod 3 (`flutter_riverpod`), `go_router`, `shared_preferences`.
+- Fonts bundled as Latin subsets: `SpaceMono` (400/700, default), `Lexend` Regular (card titles only); see `tool/subset_fonts.md`. No `google_fonts`.
+- Icons: add an SVG to `assets/icons`, a value to the `Ui` enum, then run `node tool/gen_icons.mjs`.
 - No new packages without asking the orchestrator (note it in your report).
 
 ## Shared foundation (do not edit unless you own it)
@@ -16,7 +17,7 @@ Where doc and web code disagree: **code wins for data**, **doc wins for visuals*
 - `lib/theme/uiverse_text.dart` — `UiText.pageTitle/.sectionHead/.body/.chip/.caption/.meta/...`, `UiText.mono(size, bold:, height:, track:)`, `UiText.tabular`. Styles have no colour: `.copyWith(color: context.ui.text2)`.
 - `lib/theme/motion.dart` — `kDur kEase kTransition kFadeUp kFadeIn kSheet`, `Lift.l1..l5`, `hardShadow(d, color)`, `motion(context, d)` (reduced-motion aware), `Bp.sm/md/lg/xl`.
 - `lib/theme/uiverse_theme.dart` — `uiverseTheme(Brightness)`.
-- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `Hit48` (48dp hit area), `LogoMark(size:)`, `HoverTap` (hover fill, 2px accent focus ring, 48dp min hit, semantics, no ink — the default tappable).
+- `lib/widgets/core/` — `InkBox(shadow:, dashed:)`, `LiftOnPress(onTap:, onLiftChanged:)`, `UiIcon(Ui.search, size:, color:, turns:)`, `LogoMark(size:)`, `HoverTap` (hover fill, 2px accent focus ring, 48dp min hit, semantics, no ink — the default tappable).
 - `lib/data/models.dart` — `Item, Source, Palette, Block, Crop, ArchetypeDef`, enums `Archetype(.slug)`, `Kind`, `Device`, `Viewport(.w/.h/.label/.pick)`, `Tier`.
 
 ## Phase 1 APIs (read the files for exact signatures)
