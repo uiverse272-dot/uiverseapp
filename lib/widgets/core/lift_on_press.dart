@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
@@ -56,7 +57,10 @@ class _LiftOnPressState extends State<LiftOnPress> {
           onExit: (_) => _set(false),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTapDown: (_) => _set(true),
+            onTapDown: (_) {
+              HapticFeedback.selectionClick().ignore();
+              _set(true);
+            },
             onTapCancel: () => _set(false),
             onTapUp: (_) => _set(false),
             onTap: widget.onTap,

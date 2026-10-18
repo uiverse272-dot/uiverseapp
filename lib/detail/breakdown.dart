@@ -22,6 +22,24 @@ String cssVariables(List<ColorRole> roles) =>
 String tailwindTheme(List<ColorRole> roles) =>
     '@theme {\n${roles.map((r) => '  --color-${r.token}: ${r.value};').join('\n')}\n}';
 
+/// `accent-fg` -> `accentFg`, for a Swift identifier.
+String _swiftIdentifier(String token) {
+  final parts = token.split('-');
+  return parts.first + parts.skip(1).map((p) => p[0].toUpperCase() + p.substring(1)).join();
+}
+
+/// A `Color` extension block for [roles] (free "Copy as SwiftUI colors").
+String swiftUiTheme(List<ColorRole> roles) {
+  String channel(String hex, int start) => (int.parse(hex.substring(start, start + 2), radix: 16) / 255)
+      .toStringAsFixed(3);
+  final lines = roles.map((r) {
+    final hex = r.value.substring(1); // drop '#'
+    return '  static let ${_swiftIdentifier(r.token)} = '
+        'Color(red: ${channel(hex, 0)}, green: ${channel(hex, 2)}, blue: ${channel(hex, 4)})';
+  }).join('\n');
+  return 'extension Color {\n$lines\n}';
+}
+
 /// The "Understand" step (§10.10): section outline, derived layout, colour
 /// roles, type scale and spacing rhythm, all derived from the capture.
 class Breakdown extends StatelessWidget {
@@ -208,6 +226,7 @@ class _ColourRoles extends StatelessWidget {
               children: [
                 CopyValue(cssVariables(roles), label: 'Copy as CSS variables', bordered: true),
                 CopyValue(tailwindTheme(roles), label: 'Copy as Tailwind theme', bordered: true),
+                CopyValue(swiftUiTheme(roles), label: 'Copy as SwiftUI colors', bordered: true),
               ],
             ),
           ),

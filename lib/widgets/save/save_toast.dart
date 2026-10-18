@@ -122,47 +122,62 @@ class _SaveToastState extends ConsumerState<SaveToast> {
     final c = context.ui;
     final ctl = ref.read(saveToastProvider.notifier);
     final slug = widget.toast.slug;
+    final actions = <Widget>[
+      if (slug != null)
+        UiChip('Undo', onTap: () => ctl.toggle(slug), height: null, vPad: 6),
+      if (widget.toast.saved && slug != null)
+        UiChip('Move to…', onTap: () => setState(() => _picking = true), height: null, vPad: 6),
+      HoverTap(
+        onTap: ctl.dismiss,
+        minSize: const Size(0, 48),
+        builder: (context, hovered) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            'Dismiss',
+            style: UiText.chip.copyWith(color: hovered ? c.text : c.text3),
+          ),
+        ),
+      ),
+    ];
     return Semantics(
       liveRegion: true,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(color: c.accent, shape: BoxShape.circle),
-            alignment: Alignment.center,
-            child: UiIcon(Ui.check, size: 13, color: c.accentFg),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              widget.toast.text,
-              // Web truncates to one line, but Space Mono at phone widths cuts
-              // off the collection name; two lines keeps it readable.
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: UiText.button.copyWith(color: c.text),
-            ),
-          ),
-          if (slug != null) ...[
-            const SizedBox(width: 12),
-            UiChip(
-              'Move to…',
-              onTap: () => setState(() => _picking = true),
-              height: null,
-              vPad: 6,
-            ),
-          ],
-          const SizedBox(width: 8),
-          HoverTap(
-            onTap: ctl.dismiss,
-            minSize: const Size(0, 48),
-            builder: (context, hovered) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                'Dismiss',
-                style: UiText.chip.copyWith(color: hovered ? c.text : c.text3),
+          Row(
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(color: c.accent, shape: BoxShape.circle),
+                alignment: Alignment.center,
+                child: UiIcon(Ui.check, size: 13, color: c.accentFg),
               ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.toast.text,
+                  // Web truncates to one line, but Space Mono at phone widths
+                  // cuts off the collection name; two lines keeps it readable.
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: UiText.button.copyWith(color: c.text),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          // Wrapped (not a Row): with Undo *and* Move to… both showing after
+          // a save, the three actions don't always fit one line at phone
+          // widths.
+          Align(
+            alignment: Alignment.centerRight,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: actions,
             ),
           ),
         ],

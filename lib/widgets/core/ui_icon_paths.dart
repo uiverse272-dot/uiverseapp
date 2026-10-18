@@ -206,6 +206,17 @@ final Map<Ui, UiIconShape> kUiIconShapes = <Ui, UiIconShape>{
       ..lineTo(16.8, 16.8),
     fill: null,
   ),
+  Ui.share: (
+    stroke: Path()
+      ..addOval(const Rect.fromLTRB(15.5, 2.5, 20.5, 7.5))
+      ..addOval(const Rect.fromLTRB(3.5, 9.5, 8.5, 14.5))
+      ..addOval(const Rect.fromLTRB(15.5, 16.5, 20.5, 21.5))
+      ..moveTo(8.2, 10.6)
+      ..lineTo(15.8, 6.4)
+      ..moveTo(8.2, 13.4)
+      ..lineTo(15.8, 17.6),
+    fill: null,
+  ),
   Ui.sparkle: (
     stroke: Path()
       ..moveTo(12, 4)

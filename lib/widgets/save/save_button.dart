@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/hover_tap.dart';
@@ -34,7 +35,10 @@ class SaveButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final saved = ref.watch(savesProvider.select((s) => s.isSaved(slug)));
-    void toggle() => ref.read(saveToastProvider.notifier).toggle(slug);
+    void toggle() {
+      HapticFeedback.lightImpact().ignore();
+      ref.read(saveToastProvider.notifier).toggle(slug);
+    }
     final c = context.ui;
     final mark = saved ? Ui.bookmarkFilled : Ui.bookmark;
 

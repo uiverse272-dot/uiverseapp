@@ -10,6 +10,7 @@ import '../../theme/uiverse_text.dart';
 import '../core/lift_on_press.dart';
 import '../core/ui_icon.dart';
 import '../save/save_button.dart';
+import 'card_focus_overlay.dart';
 import 'item_aspect.dart';
 
 /// Feed plate (§10.2): matted preview, PRO badge, hover corner badges (≥768),
@@ -109,7 +110,7 @@ class _FeedCardState extends State<FeedCard> {
                 onTap: _open,
                 semanticLabel: item.title,
                 onLiftChanged: (v) => _lifted.value = v,
-                child: plate,
+                child: CardFocusOverlay(item: item, child: plate),
               ),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,

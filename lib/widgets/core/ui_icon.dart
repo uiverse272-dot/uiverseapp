@@ -29,6 +29,7 @@ enum Ui {
   phone,
   plus,
   search,
+  share,
   sparkle,
   sun,
   upload,
