@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/catalog.dart';
 import '../../data/format.dart';
 import '../../data/models.dart';
-import '../../mock/mock_screen.dart';
+import '../../mock/scroll_aware_mock.dart';
 import '../../router/routes.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
@@ -98,7 +98,7 @@ class CreatorCard extends StatelessWidget {
                       child: DecoratedBox(
                         position: DecorationPosition.foreground,
                         decoration: BoxDecoration(border: Border.all(color: c.border)),
-                        child: MockScreen(item: withAspect(work[i], 1.1)),
+                        child: ScrollAwareMock(item: withAspect(work[i], 1.1)),
                       ),
                     ),
                   ],

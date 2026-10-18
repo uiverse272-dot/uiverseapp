@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../mock/mock_screen.dart';
+import '../../mock/scroll_aware_mock.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
@@ -188,12 +188,12 @@ class _Preview extends StatefulWidget {
 }
 
 class _PreviewState extends State<_Preview> {
-  // One MockScreen per cover: a new instance would rebuild the whole mock.
+  // One mock per cover: a new instance would rebuild the whole mock.
   late Widget? _mock = _buildMock();
 
   Widget? _buildMock() {
     final cover = widget.tile.cover;
-    return cover == null ? null : MockScreen(item: withAspect(cover, 4 / 3));
+    return cover == null ? null : ScrollAwareMock(item: withAspect(cover, 4 / 3));
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart' hide Block;
 
 import '../../data/catalog.dart';
 import '../../data/models.dart';
-import '../../mock/mock_screen.dart';
+import '../../mock/scroll_aware_mock.dart';
 import '../../router/routes.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
@@ -109,7 +109,7 @@ class LayoutCard extends StatelessWidget {
                   child: DecoratedBox(
                     position: DecorationPosition.foreground,
                     decoration: BoxDecoration(border: Border.all(color: c.border)),
-                    child: MockScreen(item: withAspect(entry.example, 0.8)),
+                    child: ScrollAwareMock(item: withAspect(entry.example, 0.8)),
                   ),
                 ),
               ),

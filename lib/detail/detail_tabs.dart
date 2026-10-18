@@ -6,6 +6,7 @@ import '../data/models.dart';
 import '../data/palettes.dart';
 import '../data/spec.dart';
 import '../mock/mock_screen.dart';
+import '../mock/scroll_aware_mock.dart';
 import '../router/detail.dart';
 import '../router/routes.dart';
 import '../theme/motion.dart';
@@ -497,7 +498,7 @@ class MiniCard extends StatelessWidget {
                   child: OverflowBox(
                     alignment: Alignment.topCenter,
                     maxHeight: double.infinity,
-                    child: MockScreen(item: item),
+                    child: ScrollAwareMock(item: item),
                   ),
                 ),
               ),

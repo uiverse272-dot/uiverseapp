@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/format.dart';
 import '../../data/models.dart';
-import '../../mock/mock_screen.dart';
+import '../../mock/scroll_aware_mock.dart';
 import '../../router/detail.dart';
 import '../../theme/motion.dart';
 import '../../theme/uiverse_colors.dart';
@@ -37,7 +37,7 @@ class _FeedCardState extends State<FeedCard> {
 
   Widget _buildMock() {
     final crop = widget.crop;
-    return MockScreen(item: crop == null ? widget.item : withAspect(widget.item, crop));
+    return ScrollAwareMock(item: crop == null ? widget.item : withAspect(widget.item, crop));
   }
 
   @override
