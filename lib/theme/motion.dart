@@ -37,8 +37,11 @@ const Duration kFrameSwitch = Duration(milliseconds: 200);
 const Duration kReveal = Duration(milliseconds: 300);
 
 /// Long-press card focus overlay: expand-to-centre open, collapse-back close.
-const Duration kFocusOpen = Duration(milliseconds: 260);
-const Duration kFocusClose = Duration(milliseconds: 180);
+const Duration kFocusOpen = Duration(milliseconds: 320);
+const Duration kFocusClose = Duration(milliseconds: 200);
+
+/// Focus-overlay action arming: scale, magnetic pull and label fade.
+const Duration kFocusArm = Duration(milliseconds: 140);
 
 /// Breakpoints (§4.3).
 abstract final class Bp {
