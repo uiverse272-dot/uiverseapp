@@ -49,3 +49,6 @@ app.*.map.json
 
 # Agent worktrees
 .claude/worktrees/
+
+# Local secrets
+.env*.local
