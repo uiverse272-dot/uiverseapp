@@ -64,7 +64,7 @@ void main() {
 
   testWidgets('saved cell shows count badge, capped at 99+', (tester) async {
     final saves = SavesState(saves: [
-      for (var i = 0; i < 120; i++) SaveEntry(slug: 's$i', collectionId: 'recent', at: i),
+      for (var i = 0; i < 120; i++) SaveEntry(slug: 's$i', at: i),
     ]);
     await pumpApp(tester, width: 1024, prefs: {kSavesKey: _encode(saves)});
     expect(find.text('99+'), findsOneWidget);

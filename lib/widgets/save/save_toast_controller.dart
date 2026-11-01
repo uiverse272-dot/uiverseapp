@@ -35,9 +35,8 @@ class SaveToastController extends Notifier<SaveToastState?> {
   /// Toggles [slug] and reports the result — what every save control does.
   /// [slug] is always attached so the toast can offer "Undo" either way.
   void toggle(String slug) {
-    final landedIn = ref.read(savesProvider.notifier).toggle(slug);
-    if (landedIn != null) {
-      show('Saved to $landedIn', slug: slug, saved: true);
+    if (ref.read(savesProvider.notifier).toggle(slug)) {
+      show('Saved', slug: slug, saved: true);
     } else {
       show('Removed', slug: slug);
     }
@@ -45,7 +44,7 @@ class SaveToastController extends Notifier<SaveToastState?> {
 
   /// Files [slug] under [collectionId] and closes the toast.
   void moveTo(String slug, String collectionId) {
-    ref.read(savesProvider.notifier).move(slug, collectionId);
+    ref.read(savesProvider.notifier).pin(slug, collectionId);
     dismiss();
   }
 

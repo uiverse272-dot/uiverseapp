@@ -42,6 +42,12 @@ class _CollectionPillsState extends State<CollectionPills> {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         _Pill(label: 'All', count: s.count, selected: widget.active == 'all', onTap: () => widget.onSelect('all')),
+        _Pill(
+          label: 'Unsorted',
+          count: s.unsorted.length,
+          selected: widget.active == 'unsorted',
+          onTap: () => widget.onSelect('unsorted'),
+        ),
         for (final SaveCollection col in s.collections)
           _Pill(
             label: col.name,

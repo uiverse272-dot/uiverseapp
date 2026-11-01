@@ -7,10 +7,14 @@ import 'package:uiverse/state/saves.dart';
 
 import '../search/discovery_harness.dart';
 
-Map<String, Object> _prefs(List<(String, String)> saves, {List<SaveCollection> extra = const []}) => {
+Map<String, Object> _prefs(List<(String, String?)> saves, {List<SaveCollection> extra = const []}) => {
       kSavesKey: jsonEncode(SavesState(
-        saves: [for (final (slug, col) in saves) SaveEntry(slug: slug, collectionId: col, at: 1)],
-        collections: [...kDefaultCollections, ...extra],
+        saves: [for (final (slug, _) in saves) SaveEntry(slug: slug, at: 1)],
+        collections: extra,
+        pins: [
+          for (final (slug, col) in saves)
+            if (col != null) SavePin(slug: slug, collectionId: col, at: 1),
+        ],
       ).toJson()),
     };
 
@@ -18,13 +22,18 @@ final Finder _nameInput =
     find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Collection name');
 
 void main() {
-  test('savedItems maps saves to items, per collection, skipping unknown slugs', () {
-    const s = SavesState(saves: [
-      SaveEntry(slug: 's001-ledgerly-homepage', collectionId: 'recent', at: 2),
-      SaveEntry(slug: 'gone', collectionId: 'recent', at: 1),
-      SaveEntry(slug: 'c0011-ledgerly-navbar', collectionId: 'mood', at: 0),
-    ]);
+  test('savedItems maps saves to items, per view, skipping unknown slugs', () {
+    const s = SavesState(
+      saves: [
+        SaveEntry(slug: 's001-ledgerly-homepage', at: 2),
+        SaveEntry(slug: 'gone', at: 1),
+        SaveEntry(slug: 'c0011-ledgerly-navbar', at: 0),
+      ],
+      collections: [SaveCollection(id: 'mood', name: 'Mood')],
+      pins: [SavePin(slug: 'c0011-ledgerly-navbar', collectionId: 'mood', at: 0)],
+    );
     expect(savedItems(s, kAllCollections).map((i) => i.slug), ['s001-ledgerly-homepage', 'c0011-ledgerly-navbar']);
+    expect(savedItems(s, kUnsortedCollections).map((i) => i.slug), ['s001-ledgerly-homepage']);
     expect(savedItems(s, 'mood').map((i) => i.slug), ['c0011-ledgerly-navbar']);
   });
 
@@ -33,7 +42,7 @@ void main() {
       await pumpDiscovery(tester, width: width, location: '/saved');
       expect(find.text('Saved'), findsWidgets);
       expect(find.text('All 0'), findsOneWidget);
-      expect(find.text('Recently saved 0'), findsOneWidget);
+      expect(find.text('Unsorted 0'), findsOneWidget);
       expect(find.text('New collection'), findsOneWidget);
       expect(find.text('Nothing saved here yet'), findsOneWidget);
       expect(find.text('Tap the bookmark under any card to save it here.'), findsOneWidget);
@@ -43,7 +52,7 @@ void main() {
   testWidgets('collection pills hug their label and share a row', (tester) async {
     await pumpDiscovery(tester, width: 1024, location: '/saved');
     final all = tester.getRect(find.text('All 0'));
-    final recent = tester.getRect(find.text('Recently saved 0'));
+    final recent = tester.getRect(find.text('Unsorted 0'));
     expect(tester.getSize(find.ancestor(of: find.text('All 0'), matching: find.byType(AnimatedContainer))).width,
         lessThan(200));
     expect(recent.top, all.top);
@@ -62,12 +71,12 @@ void main() {
       width: 1024,
       location: '/saved',
       prefs: _prefs(
-        [('s001-ledgerly-homepage', 'recent'), ('s002-ledgerly-spend-overview', 'mood')],
+        [('s001-ledgerly-homepage', null), ('s002-ledgerly-spend-overview', 'mood')],
         extra: const [SaveCollection(id: 'mood', name: 'Mood')],
       ),
     );
     expect(find.text('All 2'), findsOneWidget);
-    expect(find.text('Recently saved 1'), findsOneWidget);
+    expect(find.text('Unsorted 1'), findsOneWidget);
     expect(find.text('Mood 1'), findsOneWidget);
     expect(find.text('Homepage'), findsOneWidget);
     expect(find.text('Spend overview'), findsOneWidget);

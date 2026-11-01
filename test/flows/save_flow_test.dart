@@ -9,6 +9,7 @@ import 'package:uiverse/shell/navbar.dart';
 import 'package:uiverse/shell/rail.dart';
 import 'package:uiverse/state/saves.dart';
 import 'package:uiverse/widgets/feed/feed_card.dart';
+import 'package:uiverse/widgets/save/save_toast.dart';
 
 import 'flow_harness.dart';
 
@@ -34,7 +35,7 @@ void main() {
       // Save from the detail rail.
       final Finder save = inside(find.byType(DetailScreen), find.text('Save'));
       await tapVisible(tester, save.first);
-      expect(find.text('Saved to $kRecentCollectionName'), findsOneWidget);
+      expect(inside(find.byType(SaveToast), find.text('Saved')), findsOneWidget);
       expect(app.container.read(savesProvider).isSaved(item.slug), isTrue);
 
       // Toast → Move to… → New collection.
@@ -63,14 +64,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(SavedScreen), findsOneWidget);
       expect(find.bySemanticsLabel('All 1'), findsOneWidget);
-      expect(find.bySemanticsLabel('$kRecentCollectionName 0'), findsOneWidget);
+      expect(find.bySemanticsLabel('Unsorted 0'), findsOneWidget);
 
       await tester.tap(find.bySemanticsLabel('Moodboard 1'));
       await tester.pumpAndSettle();
       expect(find.text(item.title), findsOneWidget);
       expect(find.byType(FeedCard), findsOneWidget);
 
-      await tester.tap(find.bySemanticsLabel('$kRecentCollectionName 0'));
+      await tester.tap(find.bySemanticsLabel('Unsorted 0'));
       await tester.pumpAndSettle();
       expect(find.byType(FeedCard), findsNothing);
       expect(find.text('Nothing saved here yet'), findsOneWidget);
@@ -84,7 +85,7 @@ void main() {
 
     await tester.tap(inside(card, find.bySemanticsLabel('Save')));
     await tester.pumpAndSettle();
-    expect(find.text('Saved to $kRecentCollectionName'), findsOneWidget);
+    expect(inside(find.byType(SaveToast), find.text('Saved')), findsOneWidget);
     expect(inside(find.byType(Navbar), find.bySemanticsLabel('Saved, 1')), findsOneWidget);
 
     await tester.tap(inside(card, find.bySemanticsLabel('Remove from saves')));

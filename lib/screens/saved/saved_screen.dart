@@ -16,10 +16,17 @@ import '../../widgets/core/ui_chip.dart';
 /// The "All" pill's id.
 const String kAllCollections = 'all';
 
-/// Catalogue items saved in [collection] (`all` = every save), newest first.
+/// The "Unsorted" pill's id.
+const String kUnsortedCollections = 'unsorted';
+
+/// Catalogue items in [view]: `all`, `unsorted` or a board id, newest first.
 /// Saves whose slug no longer exists are skipped.
-List<Item> savedItems(SavesState s, String collection) => <Item>[
-      for (final SaveEntry e in collection == kAllCollections ? s.saves : s.savesIn(collection))
+List<Item> savedItems(SavesState s, String view) => <Item>[
+      for (final SaveEntry e in switch (view) {
+        kAllCollections => s.saves,
+        kUnsortedCollections => s.unsorted,
+        _ => s.savesIn(view),
+      })
         ?bySlug(e.slug),
     ];
 
