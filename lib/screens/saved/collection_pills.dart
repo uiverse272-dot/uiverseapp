@@ -8,6 +8,7 @@ import '../../theme/uiverse_text.dart';
 import '../../widgets/core/hover_tap.dart';
 import '../../widgets/core/ink_box.dart';
 import '../../widgets/core/ui_icon.dart';
+import '../../widgets/save/saved_items.dart';
 
 /// Collection pills (§10.14): "All" + one per collection with counts, then a
 /// dashed "New board" button that becomes an inline name input.
@@ -41,17 +42,17 @@ class _CollectionPillsState extends State<CollectionPills> {
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        _Pill(label: 'All', count: s.count, selected: widget.active == 'all', onTap: () => widget.onSelect('all')),
+        _Pill(label: 'All', count: visibleSaveCount(s), selected: widget.active == 'all', onTap: () => widget.onSelect('all')),
         _Pill(
           label: 'Unsorted',
-          count: s.unsorted.length,
-          selected: widget.active == 'unsorted',
-          onTap: () => widget.onSelect('unsorted'),
+          count: savedItems(s, kUnsortedCollections).length,
+          selected: widget.active == kUnsortedCollections,
+          onTap: () => widget.onSelect(kUnsortedCollections),
         ),
         for (final SaveCollection col in s.collections)
           _Pill(
             label: col.name,
-            count: s.countIn(col.id),
+            count: savedItems(s, col.id).length,
             selected: widget.active == col.id,
             onTap: () => widget.onSelect(col.id),
           ),

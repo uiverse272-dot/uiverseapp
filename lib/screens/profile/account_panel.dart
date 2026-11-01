@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../api/api_client.dart';
 import '../../router/routes.dart';
 import '../../state/auth.dart';
+import '../../state/saves_sync.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
 import '../../widgets/core/box_button.dart';
@@ -23,6 +24,13 @@ class AccountPanel extends ConsumerWidget {
     final AccountUser? user = auth.user;
     void signIn() => context.go(Routes.signIn);
     return Padding(padding: const EdgeInsets.only(top: 32), child: _panel(context, ref, auth, user, signIn));
+  }
+
+  /// Gives changes in flight a moment to land: sign-out wipes this device's copy.
+  Future<void> _signOut(WidgetRef ref) async {
+    final Future<void> settled = ref.read(savesSyncProvider)?.settle() ?? Future<void>.value();
+    await settled.timeout(const Duration(seconds: 5), onTimeout: () {});
+    await ref.read(authProvider.notifier).signOut();
   }
 
   Widget _panel(BuildContext context, WidgetRef ref, AuthState auth, AccountUser? user, VoidCallback signIn) {
@@ -54,7 +62,7 @@ class AccountPanel extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 if (auth.expired) BoxButton('Sign in again', onTap: signIn, accent: true),
-                BoxButton('Sign out', onTap: ref.read(authProvider.notifier).signOut),
+                BoxButton('Sign out', onTap: () => _signOut(ref)),
               ],
             ],
           ),

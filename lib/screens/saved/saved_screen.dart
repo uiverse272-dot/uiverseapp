@@ -2,33 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../data/catalog.dart';
 import '../../data/models.dart';
 import '../../router/routes.dart';
 import '../../state/saves.dart';
 import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
 import '../../widgets/feed/feed.dart';
+import '../../widgets/save/saved_items.dart';
 import '../../widgets/section/section.dart';
 import 'collection_pills.dart';
+
+export '../../widgets/save/saved_items.dart';
 import '../../widgets/core/ui_chip.dart';
-
-/// The "All" pill's id.
-const String kAllCollections = 'all';
-
-/// The "Unsorted" pill's id.
-const String kUnsortedCollections = 'unsorted';
-
-/// Catalogue items in [view]: `all`, `unsorted` or a board id, newest first.
-/// Saves whose slug no longer exists are skipped.
-List<Item> savedItems(SavesState s, String view) => <Item>[
-      for (final SaveEntry e in switch (view) {
-        kAllCollections => s.saves,
-        kUnsortedCollections => s.unsorted,
-        _ => s.savesIn(view),
-      })
-        ?bySlug(e.slug),
-    ];
 
 /// `/saved` — saves and collections (§12). Collection pills (All + each,
 /// with counts) and a dashed "New board" button that turns into an
@@ -64,6 +49,14 @@ class _SavedScreenState extends ConsumerState<SavedScreen> {
                   sub: 'Saving never asks which board. Organising is a separate, later act — '
                       'that is why the toast offers “Add to board” instead of a dialog.',
                 ),
+                if (saves.count - visibleSaveCount(saves) case final int hidden when hidden > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      '$hidden saved on the web can only be seen there for now.',
+                      style: UiText.small.copyWith(color: context.ui.text3),
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: CollectionPills(

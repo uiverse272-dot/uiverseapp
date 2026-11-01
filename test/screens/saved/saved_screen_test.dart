@@ -88,6 +88,23 @@ void main() {
     expect(find.text('Spend overview'), findsOneWidget);
   });
 
+  testWidgets('designs only the web has are counted out and explained', (tester) async {
+    await pumpDiscovery(
+      tester,
+      width: 1024,
+      location: '/saved',
+      prefs: _prefs([('s001-ledgerly-homepage', null), ('web-only-capture', null), ('web-only-too', null)]),
+    );
+    expect(find.text('All 1'), findsOneWidget);
+    expect(find.text('Unsorted 1'), findsOneWidget);
+    expect(find.text('2 saved on the web can only be seen there for now.'), findsOneWidget);
+  });
+
+  testWidgets('no such line when every save is visible', (tester) async {
+    await pumpDiscovery(tester, location: '/saved', prefs: _prefs([('s001-ledgerly-homepage', null)]));
+    expect(find.textContaining('saved on the web'), findsNothing);
+  });
+
   testWidgets('New board opens an input and creates the collection', (tester) async {
     final app = await pumpDiscovery(tester, location: '/saved');
     await tester.tap(find.text('New board'));
