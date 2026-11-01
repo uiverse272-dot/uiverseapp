@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,7 @@ Future<FlowApp> pumpFlowApp(
   SharedPreferences? prefs,
   Map<String, Object> initial = const {},
   Clock? clock,
+  List<Override> overrides = const [],
 }) async {
   tester.view
     ..physicalSize = Size(width, height)
@@ -44,6 +46,7 @@ Future<FlowApp> pumpFlowApp(
       sharedPreferencesProvider.overrideWithValue(sp),
       routerProvider.overrideWithValue(router),
       if (clock != null) clockProvider.overrideWithValue(clock),
+      ...overrides,
     ],
     child: const UiverseApp(),
   ));

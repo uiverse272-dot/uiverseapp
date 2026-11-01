@@ -27,7 +27,7 @@ void main() {
 
   testWidgets('link cards are two columns on tablets, one on phones', (tester) async {
     await pumpDirectory(tester, location: '/u/me', width: 1024);
-    final collections = find.text('Boards, sections, private notes.');
+    final collections = find.text('Boards, one per project, with notes.');
     final settings = find.text('Plan, profile, notifications.');
     expect(tester.getTopLeft(collections).dy, tester.getTopLeft(settings).dy);
 

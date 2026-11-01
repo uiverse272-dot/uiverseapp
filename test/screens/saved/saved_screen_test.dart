@@ -7,24 +7,33 @@ import 'package:uiverse/state/saves.dart';
 
 import '../search/discovery_harness.dart';
 
-Map<String, Object> _prefs(List<(String, String)> saves, {List<SaveCollection> extra = const []}) => {
+Map<String, Object> _prefs(List<(String, String?)> saves, {List<SaveCollection> extra = const []}) => {
       kSavesKey: jsonEncode(SavesState(
-        saves: [for (final (slug, col) in saves) SaveEntry(slug: slug, collectionId: col, at: 1)],
-        collections: [...kDefaultCollections, ...extra],
+        saves: [for (final (slug, _) in saves) SaveEntry(slug: slug, at: 1)],
+        collections: extra,
+        pins: [
+          for (final (slug, col) in saves)
+            if (col != null) SavePin(slug: slug, collectionId: col, at: 1),
+        ],
       ).toJson()),
     };
 
 final Finder _nameInput =
-    find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Collection name');
+    find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Board name');
 
 void main() {
-  test('savedItems maps saves to items, per collection, skipping unknown slugs', () {
-    const s = SavesState(saves: [
-      SaveEntry(slug: 's001-ledgerly-homepage', collectionId: 'recent', at: 2),
-      SaveEntry(slug: 'gone', collectionId: 'recent', at: 1),
-      SaveEntry(slug: 'c0011-ledgerly-navbar', collectionId: 'mood', at: 0),
-    ]);
+  test('savedItems maps saves to items, per view, skipping unknown slugs', () {
+    const s = SavesState(
+      saves: [
+        SaveEntry(slug: 's001-ledgerly-homepage', at: 2),
+        SaveEntry(slug: 'gone', at: 1),
+        SaveEntry(slug: 'c0011-ledgerly-navbar', at: 0),
+      ],
+      collections: [SaveCollection(id: 'mood', name: 'Mood')],
+      pins: [SavePin(slug: 'c0011-ledgerly-navbar', collectionId: 'mood', at: 0)],
+    );
     expect(savedItems(s, kAllCollections).map((i) => i.slug), ['s001-ledgerly-homepage', 'c0011-ledgerly-navbar']);
+    expect(savedItems(s, kUnsortedCollections).map((i) => i.slug), ['s001-ledgerly-homepage']);
     expect(savedItems(s, 'mood').map((i) => i.slug), ['c0011-ledgerly-navbar']);
   });
 
@@ -33,8 +42,8 @@ void main() {
       await pumpDiscovery(tester, width: width, location: '/saved');
       expect(find.text('Saved'), findsWidgets);
       expect(find.text('All 0'), findsOneWidget);
-      expect(find.text('Recently saved 0'), findsOneWidget);
-      expect(find.text('New collection'), findsOneWidget);
+      expect(find.text('Unsorted 0'), findsOneWidget);
+      expect(find.text('New board'), findsOneWidget);
       expect(find.text('Nothing saved here yet'), findsOneWidget);
       expect(find.text('Tap the bookmark under any card to save it here.'), findsOneWidget);
     });
@@ -43,7 +52,7 @@ void main() {
   testWidgets('collection pills hug their label and share a row', (tester) async {
     await pumpDiscovery(tester, width: 1024, location: '/saved');
     final all = tester.getRect(find.text('All 0'));
-    final recent = tester.getRect(find.text('Recently saved 0'));
+    final recent = tester.getRect(find.text('Unsorted 0'));
     expect(tester.getSize(find.ancestor(of: find.text('All 0'), matching: find.byType(AnimatedContainer))).width,
         lessThan(200));
     expect(recent.top, all.top);
@@ -62,12 +71,12 @@ void main() {
       width: 1024,
       location: '/saved',
       prefs: _prefs(
-        [('s001-ledgerly-homepage', 'recent'), ('s002-ledgerly-spend-overview', 'mood')],
+        [('s001-ledgerly-homepage', null), ('s002-ledgerly-spend-overview', 'mood')],
         extra: const [SaveCollection(id: 'mood', name: 'Mood')],
       ),
     );
     expect(find.text('All 2'), findsOneWidget);
-    expect(find.text('Recently saved 1'), findsOneWidget);
+    expect(find.text('Unsorted 1'), findsOneWidget);
     expect(find.text('Mood 1'), findsOneWidget);
     expect(find.text('Homepage'), findsOneWidget);
     expect(find.text('Spend overview'), findsOneWidget);
@@ -79,28 +88,45 @@ void main() {
     expect(find.text('Spend overview'), findsOneWidget);
   });
 
-  testWidgets('New collection opens an input and creates the collection', (tester) async {
+  testWidgets('designs only the web has are counted out and explained', (tester) async {
+    await pumpDiscovery(
+      tester,
+      width: 1024,
+      location: '/saved',
+      prefs: _prefs([('s001-ledgerly-homepage', null), ('web-only-capture', null), ('web-only-too', null)]),
+    );
+    expect(find.text('All 1'), findsOneWidget);
+    expect(find.text('Unsorted 1'), findsOneWidget);
+    expect(find.text('2 saved on the web can only be seen there for now.'), findsOneWidget);
+  });
+
+  testWidgets('no such line when every save is visible', (tester) async {
+    await pumpDiscovery(tester, location: '/saved', prefs: _prefs([('s001-ledgerly-homepage', null)]));
+    expect(find.textContaining('saved on the web'), findsNothing);
+  });
+
+  testWidgets('New board opens an input and creates the collection', (tester) async {
     final app = await pumpDiscovery(tester, location: '/saved');
-    await tester.tap(find.text('New collection'));
+    await tester.tap(find.text('New board'));
     await tester.pumpAndSettle();
-    expect(find.text('New collection'), findsNothing);
+    expect(find.text('New board'), findsNothing);
     expect(_nameInput, findsOneWidget);
 
     await tester.enterText(_nameInput, '  Moodboard ');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
     expect(find.text('Moodboard 0'), findsOneWidget);
-    expect(find.text('New collection'), findsOneWidget);
+    expect(find.text('New board'), findsOneWidget);
     expect(app.prefs.getString(kSavesKey), contains('"name":"Moodboard"'));
   });
 
   testWidgets('an empty name creates nothing', (tester) async {
     await pumpDiscovery(tester, location: '/saved');
-    await tester.tap(find.text('New collection'));
+    await tester.tap(find.text('New board'));
     await tester.pumpAndSettle();
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
-    expect(find.text('New collection'), findsOneWidget);
+    expect(find.text('New board'), findsOneWidget);
     expect(find.textContaining(RegExp(r' 0$')), findsNWidgets(2));
   });
 }

@@ -10,7 +10,7 @@ import 'ui_icon.dart';
 /// `bg-subtle` on hover, accent fill when [on].
 ///
 /// With a [height] the chip is a fixed-height control (filters, toggles: 32);
-/// with `height: null` it hugs its text plus [vPad] (suggestions, "Move to…").
+/// with `height: null` it hugs its text plus [vPad] (suggestions, "Add to board").
 class UiChip extends StatelessWidget {
   const UiChip(
     this.label, {

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../router/routes.dart';
 import '../state/saves.dart';
+import '../widgets/save/saved_items.dart';
 import '../theme/motion.dart';
 import '../theme/uiverse_colors.dart';
 import '../theme/uiverse_text.dart';
@@ -95,7 +96,7 @@ class _ProfileCell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.ui;
-    final count = ref.watch(savesProvider.select((s) => s.count));
+    final count = ref.watch(savesProvider.select(visibleSaveCount));
     return HoverTap(
       onTap: () => context.go(Routes.me),
       link: true,
@@ -155,7 +156,7 @@ class _SavedCell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.ui;
-    final count = ref.watch(savesProvider.select((s) => s.count));
+    final count = ref.watch(savesProvider.select(visibleSaveCount));
     return HoverTap(
       onTap: () => context.go(Routes.saved),
       label: count > 0 ? 'Saved, $count' : 'Saved',

@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- allowBackup off: the session token must not leave the device. -->
     <application
+        android:allowBackup="false"
         android:label="Uiverse"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -24,6 +27,15 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Sign-in returns here (docs/api-v1.md). app_links reads the link. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="uiverse" android:host="auth"/>
+            </intent-filter>
+            <!-- Keeps go_router from treating uiverse://auth as a page. -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false"/>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

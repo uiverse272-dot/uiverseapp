@@ -8,9 +8,10 @@ import '../../theme/uiverse_text.dart';
 import '../../widgets/core/hover_tap.dart';
 import '../../widgets/core/ink_box.dart';
 import '../../widgets/core/ui_icon.dart';
+import '../../widgets/save/saved_items.dart';
 
 /// Collection pills (§10.14): "All" + one per collection with counts, then a
-/// dashed "New collection" button that becomes an inline name input.
+/// dashed "New board" button that becomes an inline name input.
 /// [active] is a collection id or `all`; [onCreate] gets the trimmed name.
 class CollectionPills extends StatefulWidget {
   const CollectionPills({
@@ -41,11 +42,17 @@ class _CollectionPillsState extends State<CollectionPills> {
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        _Pill(label: 'All', count: s.count, selected: widget.active == 'all', onTap: () => widget.onSelect('all')),
+        _Pill(label: 'All', count: visibleSaveCount(s), selected: widget.active == 'all', onTap: () => widget.onSelect('all')),
+        _Pill(
+          label: 'Unsorted',
+          count: savedItems(s, kUnsortedCollections).length,
+          selected: widget.active == kUnsortedCollections,
+          onTap: () => widget.onSelect(kUnsortedCollections),
+        ),
         for (final SaveCollection col in s.collections)
           _Pill(
             label: col.name,
-            count: s.countIn(col.id),
+            count: savedItems(s, col.id).length,
             selected: widget.active == col.id,
             onTap: () => widget.onSelect(col.id),
           ),
@@ -127,7 +134,7 @@ class _NewCollectionButton extends StatelessWidget {
     final c = context.ui;
     return HoverTap(
       onTap: onTap,
-      label: 'New collection',
+      label: 'New board',
       minSize: const Size(0, 48),
       builder: (context, hovered) {
         final Color fg = hovered ? c.text : c.text2;
@@ -142,7 +149,7 @@ class _NewCollectionButton extends StatelessWidget {
               children: [
                 UiIcon(Ui.plus, size: 14, color: fg),
                 const SizedBox(width: 6),
-                Text('New collection', style: UiText.body.copyWith(color: fg)),
+                Text('New board', style: UiText.body.copyWith(color: fg)),
               ],
             ),
           ),
@@ -208,7 +215,7 @@ class _NewCollectionInputState extends State<_NewCollectionInput> {
         style: UiText.body.copyWith(color: c.text),
         cursorColor: c.text,
         decoration: bareInput(
-          hintText: 'Collection name',
+          hintText: 'Board name',
           hintStyle: UiText.body.copyWith(color: c.text3),
         ),
       ),

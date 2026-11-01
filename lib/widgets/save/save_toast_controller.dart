@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/saves.dart';
 
 /// What the save toast is showing. [slug] is set after a toggle, enabling
-/// "Undo" either way and "Move to…" when [saved] is true.
+/// "Undo" either way and "Add to board" when [saved] is true.
 @immutable
 class SaveToastState {
   const SaveToastState({required this.text, this.slug, this.saved = false, required this.seq});
@@ -35,25 +35,22 @@ class SaveToastController extends Notifier<SaveToastState?> {
   /// Toggles [slug] and reports the result — what every save control does.
   /// [slug] is always attached so the toast can offer "Undo" either way.
   void toggle(String slug) {
-    final landedIn = ref.read(savesProvider.notifier).toggle(slug);
-    if (landedIn != null) {
-      show('Saved to $landedIn', slug: slug, saved: true);
+    if (ref.read(savesProvider.notifier).toggle(slug)) {
+      show('Saved', slug: slug, saved: true);
     } else {
       show('Removed', slug: slug);
     }
   }
 
-  /// Files [slug] under [collectionId] and closes the toast.
-  void moveTo(String slug, String collectionId) {
-    ref.read(savesProvider.notifier).move(slug, collectionId);
-    dismiss();
-  }
+  /// Puts [slug] on board [collectionId] or takes it off.
+  void pin(String slug, String collectionId, {required bool pinned}) =>
+      ref.read(savesProvider.notifier).pin(slug, collectionId, pinned: pinned);
 
-  /// Creates a collection called [name] (trimmed) and moves [slug] into it.
-  void createAndMove(String slug, String name) {
+  /// Creates a board called [name] (trimmed) with [slug] already on it.
+  void createAndPin(String slug, String name) {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
-    final id = ref.read(savesProvider.notifier).createCollection(trimmed);
-    moveTo(slug, id);
+    final notifier = ref.read(savesProvider.notifier);
+    notifier.pin(slug, notifier.createCollection(trimmed));
   }
 }

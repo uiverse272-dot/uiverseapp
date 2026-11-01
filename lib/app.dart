@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'router/router.dart';
+import 'state/auth.dart';
+import 'state/saves_sync.dart';
 import 'state/theme.dart';
 import 'theme/uiverse_colors.dart';
 import 'theme/uiverse_theme.dart';
@@ -18,6 +20,9 @@ class UiverseApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Built here so a sign-in link that opened the app isn't missed.
+    ref.read(authProvider);
+    ref.read(savesSyncProvider);
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       title: 'Uiverse',

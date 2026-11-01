@@ -8,6 +8,7 @@ import '../dev/mock_gallery.dart';
 import 'not_found_page.dart';
 import '../screens/creators/creators_screen.dart';
 import '../screens/explore/explore_screen.dart';
+import '../screens/finds/finds_submit_screen.dart';
 import '../screens/feeds/feed_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/layouts/layouts_screen.dart';
@@ -17,6 +18,7 @@ import '../screens/pricing/pricing_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/saved/saved_screen.dart';
 import '../screens/search/search_screen.dart';
+import '../screens/sign_in/sign_in_screen.dart';
 import '../screens/source/source_screen.dart';
 import '../screens/upload/upload_screen.dart';
 import '../widgets/feed/feed_card.dart';
@@ -37,6 +39,8 @@ abstract final class Routes {
   static const String pricing = '/pricing';
   static const String upload = '/upload';
   static const String me = '/u/me';
+  static const String signIn = '/sign-in';
+  static const String findsSubmit = '/finds/submit';
   static const String devMock = '/dev/mock';
 
   static String screen(String slug) => '/screen/${Uri.encodeComponent(slug)}';
@@ -74,6 +78,8 @@ enum AppRoute {
   pricing('/pricing'),
   upload('/upload'),
   user('/u/:handle'),
+  signIn('/sign-in'),
+  findsSubmit('/finds/submit'),
   legal('/legal/:doc'),
   devMock('/dev/mock');
 
@@ -116,6 +122,8 @@ Widget buildRoute(AppRoute route, BuildContext context, GoRouterState state) => 
       AppRoute.pricing => const PricingScreen(),
       AppRoute.upload => const UploadScreen(),
       AppRoute.user => ProfileScreen(handle: state.pathParameters['handle']!),
+      AppRoute.signIn => const SignInScreen(),
+      AppRoute.findsSubmit => const FindsSubmitScreen(),
       AppRoute.legal => LegalScreen(doc: state.pathParameters['doc']!),
       // Debug builds only: the constant lets release tree-shake the gallery.
       AppRoute.devMock => kDebugMode ? const MockGalleryPage() : const NotFoundPage(),
