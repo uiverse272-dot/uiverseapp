@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
@@ -20,6 +21,7 @@ class FakeBackend {
   final Map<String, FakeAccount> _sessions = {};
   final Map<String, ({String c, FakeAccount account})> _oneTime = {};
   final Queue<http.Response> _forced = Queue();
+  final Map<String, http.Response> _forcedOn = {};
   final Random _random = Random();
 
   /// Every request as `METHOD /path`, oldest first.
@@ -36,6 +38,12 @@ class FakeBackend {
 
   /// Sessions younger than this may delete; flip to false to get 400.
   bool sessionFresh = true;
+
+  /// The next request to [path] gets [response] instead of being handled.
+  void forceOn(String path, http.Response response) => _forcedOn[path] = response;
+
+  /// When set, requests wait here: the moment an answer is in flight.
+  Completer<void>? gate;
 
   /// The next request gets [response] instead of being handled.
   void forceNext(http.Response response) => _forced.add(response);
@@ -62,6 +70,10 @@ class FakeBackend {
 
   Future<http.Response> handle(http.Request r) async {
     requests.add('${r.method} ${r.url.path}');
+    final Completer<void>? waiting = gate;
+    gate = null;
+    await waiting?.future;
+    if (_forcedOn.remove(r.url.path) case final http.Response response) return response;
     if (_forced.isNotEmpty) return _forced.removeFirst();
     final Map<String, Object?> body = r.body.isEmpty ? {} : (jsonDecode(r.body) as Map<String, Object?>);
     final FakeAccount? me = _sessions[(r.headers['Authorization'] ?? r.headers['authorization'] ?? '').replaceFirst('Bearer ', '')];
