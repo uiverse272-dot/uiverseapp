@@ -1,0 +1,13 @@
+{
+  "saves": [
+    {"slug": "s001-ledgerly-homepage", "at": 1759000000000, "note": "hero"},
+    {"slug": "c0011-ledgerly-navbar", "at": 1758000000000, "note": ""},
+    {"slug": "web-only-capture", "at": 1757000000000, "note": ""}
+  ],
+  "collections": [
+    {"id": "refs", "name": "Refs", "description": "Client work"}
+  ],
+  "pins": [
+    {"slug": "s001-ledgerly-homepage", "collectionId": "refs", "at": 1759000000000}
+  ]
+}
