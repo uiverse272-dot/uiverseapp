@@ -90,11 +90,17 @@ void main() {
 
   group('slugifyCollection', () {
     test('matches the web rule', () {
-      expect(slugifyCollection('Dark Fintech / Dashboards!'), 'dark-fintech-dashboards-');
-      expect(slugifyCollection('  Hero  sections '), '-hero-sections-');
+      expect(slugifyCollection('Dark Fintech / Dashboards!'), 'dark-fintech-dashboards');
+      expect(slugifyCollection('  Hero  sections '), 'hero-sections');
       expect(slugifyCollection('Café 2026'), 'caf-2026');
-      expect(slugifyCollection('!!!'), '-');
+      expect(slugifyCollection('!!!'), isNull);
       expect(slugifyCollection(''), isNull);
+    });
+
+    test('never names a board after a view of the saves', () {
+      expect(slugifyCollection('All'), 'all-board');
+      expect(slugifyCollection('Unsorted'), 'unsorted-board');
+      expect(slugifyCollection('Recent'), 'recent-board');
     });
 
     test('caps at 40 characters', () {

@@ -141,12 +141,17 @@ class SavesState {
   int get hashCode => Object.hash(Object.hashAll(saves), Object.hashAll(collections));
 }
 
+/// Ids that name views of the saves or the old default bucket, never boards.
+const Set<String> kReservedCollectionIds = {'all', 'unsorted', kRecentCollectionId};
+
 /// Collection id from a display name — same rule as the web store:
-/// lowercase, `[^a-z0-9]+` → `-`, first 40 chars. Empty result → null.
+/// lowercase, `[^a-z0-9]+` → `-`, one edge dash trimmed from each end, first
+/// 40 chars, and `-board` after a reserved id. Empty result → null.
 String? slugifyCollection(String name) {
-  final id = name.toLowerCase().replaceAll(RegExp('[^a-z0-9]+'), '-');
+  final id = name.toLowerCase().replaceAll(RegExp('[^a-z0-9]+'), '-').replaceAll(RegExp(r'^-|-$'), '');
   final cut = id.length > 40 ? id.substring(0, 40) : id;
-  return cut.isEmpty ? null : cut;
+  if (cut.isEmpty) return null;
+  return kReservedCollectionIds.contains(cut) ? '$cut-board' : cut;
 }
 
 final savesProvider = NotifierProvider<SavesNotifier, SavesState>(SavesNotifier.new);
