@@ -31,7 +31,7 @@ List<Item> savedItems(SavesState s, String view) => <Item>[
     ];
 
 /// `/saved` — saves and collections (§12). Collection pills (All + each,
-/// with counts) and a dashed "New collection" button that turns into an
+/// with counts) and a dashed "New board" button that turns into an
 /// inline input; then the [Feed] of the selected collection or an empty state.
 ///
 /// Like the web, the selected collection is local state, not a URL param;
@@ -62,7 +62,7 @@ class _SavedScreenState extends ConsumerState<SavedScreen> {
                 const PageHeader(
                   title: 'Saved',
                   sub: 'Saving never asks which board. Organising is a separate, later act — '
-                      'that is why the toast offers “Move to…” instead of a dialog.',
+                      'that is why the toast offers “Add to board” instead of a dialog.',
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),

@@ -13,14 +13,14 @@ import 'package:uiverse/widgets/save/save_toast.dart';
 
 import 'flow_harness.dart';
 
-/// The "New collection…" field inside the save toast's picker.
+/// The "New board…" field inside the save toast's picker.
 final Finder newCollectionField = find.byWidgetPredicate(
-  (w) => w is TextField && w.decoration?.hintText == 'New collection…',
+  (w) => w is TextField && w.decoration?.hintText == 'New board…',
 );
 
 void main() {
   for (final double width in <double>[390, 1024]) {
-    testWidgets('feed → detail → save → Move to… new collection → Saved ($width)', (tester) async {
+    testWidgets('feed → detail → save → Add to board new collection → Saved ($width)', (tester) async {
       final app = await pumpFlowApp(tester, width: width, location: '/web');
       final Item item = tester.widget<FeedCard>(find.byType(FeedCard).first).item;
       Finder card() => find.ancestor(of: find.text(item.title).first, matching: find.byType(FeedCard));
@@ -38,14 +38,17 @@ void main() {
       expect(inside(find.byType(SaveToast), find.text('Saved')), findsOneWidget);
       expect(app.container.read(savesProvider).isSaved(item.slug), isTrue);
 
-      // Toast → Move to… → New collection.
-      await tester.tap(find.text('Move to…'));
+      // Toast → Add to board → New board.
+      await tester.tap(find.text('Add to board'));
       await tester.pumpAndSettle();
-      expect(find.text('Move to collection'), findsOneWidget);
+      expect(find.text('Pin to boards'), findsOneWidget);
       await tester.enterText(newCollectionField, 'Moodboard');
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
-      expect(find.text('Move to collection'), findsNothing); // toast closed
+      expect(find.text('Moodboard'), findsOneWidget); // pinned, picker still open
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+      expect(find.text('Pin to boards'), findsNothing);
       final SavesState saves = app.container.read(savesProvider);
       expect(saves.collectionName('moodboard'), 'Moodboard');
       expect(saves.savesIn('moodboard').map((e) => e.slug), [item.slug]);
@@ -91,7 +94,7 @@ void main() {
     await tester.tap(inside(card, find.bySemanticsLabel('Remove from saves')));
     await tester.pumpAndSettle();
     expect(find.text('Removed'), findsOneWidget);
-    expect(find.text('Move to…'), findsNothing);
+    expect(find.text('Add to board'), findsNothing);
     expect(app.container.read(savesProvider).isSaved(item.slug), isFalse);
   });
 }

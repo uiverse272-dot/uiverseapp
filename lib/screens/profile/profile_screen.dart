@@ -21,7 +21,7 @@ String? profileRedirect(String handle) =>
 const List<(String, String, String)> kProfileLinks = [
   ('Saved', Routes.saved, 'Everything you kept, plus collections.'),
   ('Upload', Routes.upload, 'Paste a URL — we capture and tag it.'),
-  ('Collections', Routes.saved, 'Boards, sections, private notes.'),
+  ('Collections', Routes.saved, 'Boards, one per project, with notes.'),
   ('Settings', Routes.pricing, 'Plan, profile, notifications.'),
 ];
 

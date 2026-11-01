@@ -18,7 +18,7 @@ import '../core/ui_chip.dart';
 /// Hosts the save toast above [child] (the app's navigator).
 ///
 /// Install once via `MaterialApp.router(builder:)`. It carries its own
-/// [Overlay] so the "New collection…" field has one to attach to.
+/// [Overlay] so the "New board…" field has one to attach to.
 class SaveToastLayer extends StatefulWidget {
   const SaveToastLayer({super.key, required this.child});
 
@@ -74,7 +74,7 @@ class SaveToastHost extends ConsumerWidget {
   }
 }
 
-/// The toast card itself (§10.4): result row, or the "Move to collection" picker.
+/// The toast card itself (§10.4): result row, or the "Pin to boards" picker.
 class SaveToast extends ConsumerStatefulWidget {
   const SaveToast({super.key, required this.toast});
 
@@ -107,7 +107,7 @@ class _SaveToastState extends ConsumerState<SaveToast> {
         ),
         child: DefaultTextStyle(
           style: UiText.body.copyWith(color: c.text),
-          // Esc / back close the "Move to collection" picker (§14).
+          // Esc / back close the "Pin to boards" picker (§14).
           child: BackDismiss(
             active: _picking,
             onDismiss: () => setState(() => _picking = false),
@@ -126,7 +126,7 @@ class _SaveToastState extends ConsumerState<SaveToast> {
       if (slug != null)
         UiChip('Undo', onTap: () => ctl.toggle(slug), height: null, vPad: 6),
       if (widget.toast.saved && slug != null)
-        UiChip('Move to…', onTap: () => setState(() => _picking = true), height: null, vPad: 6),
+        UiChip('Add to board', onTap: () => setState(() => _picking = true), height: null, vPad: 6),
       HoverTap(
         onTap: ctl.dismiss,
         minSize: const Size(0, 48),
@@ -168,7 +168,7 @@ class _SaveToastState extends ConsumerState<SaveToast> {
             ],
           ),
           const SizedBox(height: 6),
-          // Wrapped (not a Row): with Undo *and* Move to… both showing after
+          // Wrapped (not a Row): with Undo *and* Add to board both showing after
           // a save, the three actions don't always fit one line at phone
           // widths.
           Align(
@@ -189,36 +189,34 @@ class _SaveToastState extends ConsumerState<SaveToast> {
     final c = context.ui;
     final ctl = ref.read(saveToastProvider.notifier);
     final slug = widget.toast.slug!;
-    final collections = ref.watch(savesProvider.select((s) => s.collections));
+    final saves = ref.watch(savesProvider);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-          child: Text('Move to collection', style: UiText.small.copyWith(color: c.text3)),
+          child: Text('Pin to boards', style: UiText.small.copyWith(color: c.text3)),
         ),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 208),
-          child: ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              for (final col in collections)
-                HoverTap(
-                  onTap: () => ctl.moveTo(slug, col.id),
-                  minSize: const Size(double.infinity, 48),
-                  builder: (context, hovered) => Container(
-                    color: hovered ? c.bgSubtle : null,
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    constraints: const BoxConstraints(minHeight: 48),
-                    child: Text(col.name, style: UiText.body.copyWith(color: c.text)),
-                  ),
-                ),
-            ],
+        if (saves.collections.isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+            child: Text(
+              'No boards yet. Name one below, one per project.',
+              style: UiText.small.copyWith(color: c.text2),
+            ),
+          )
+        else
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 208),
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              children: [
+                for (final col in saves.collections) _boardRow(slug, col, saves.isPinned(slug, col.id)),
+              ],
+            ),
           ),
-        ),
         Container(
           margin: const EdgeInsets.only(top: 4),
           padding: const EdgeInsets.only(top: 8),
@@ -235,16 +233,52 @@ class _SaveToastState extends ConsumerState<SaveToast> {
                   cursorColor: c.text,
                   textInputAction: TextInputAction.done,
                   decoration: bareInput(
-                    hintText: 'New collection…',
+                    hintText: 'New board…',
                     hintStyle: UiText.body.copyWith(color: c.text3),
                   ),
-                  onSubmitted: (v) => ctl.createAndMove(slug, v),
+                  onSubmitted: (v) {
+                    ctl.createAndPin(slug, v);
+                    _name.clear();
+                  },
                 ),
               ),
             ],
           ),
         ),
+        const SizedBox(height: 8),
+        UiChip('Done', onTap: ctl.dismiss, height: null, vPad: 6),
       ],
+    );
+  }
+
+  /// One board as a checkbox: a design can sit on any number of them.
+  Widget _boardRow(String slug, SaveCollection col, bool pinned) {
+    final c = context.ui;
+    return HoverTap(
+      onTap: () => ref.read(saveToastProvider.notifier).pin(slug, col.id, pinned: !pinned),
+      checked: pinned,
+      minSize: const Size(double.infinity, 48),
+      builder: (context, hovered) => Container(
+        color: hovered ? c.bgSubtle : null,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Row(
+          children: [
+            Container(
+              width: 16,
+              height: 16,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: pinned ? c.accent : null,
+                border: Border.all(color: c.border),
+              ),
+              child: pinned ? UiIcon(Ui.check, size: 11, color: c.accentFg) : null,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(col.name, style: UiText.body.copyWith(color: c.text))),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -29,7 +29,7 @@ Future<SharedPreferences> _pump(
 }
 
 void main() {
-  testWidgets('icon save toggles, shows toast, Move to… creates a collection', (tester) async {
+  testWidgets('icon save toggles, shows toast, Add to board creates a collection', (tester) async {
     final prefs = await _pump(tester, const SaveButton('s001'));
 
     await tester.tap(find.bySemanticsLabel('Save'));
@@ -37,15 +37,15 @@ void main() {
     expect(find.descendant(of: find.byType(SaveToast), matching: find.text('Saved')), findsOneWidget);
     expect(find.bySemanticsLabel('Remove from saves'), findsOneWidget);
 
-    await tester.tap(find.text('Move to…'));
+    await tester.tap(find.text('Add to board'));
     await tester.pumpAndSettle();
-    expect(find.text('Move to collection'), findsOneWidget);
+    expect(find.text('Pin to boards'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'Dark dashboards');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
-    expect(find.text('Move to collection'), findsNothing); // toast closed
+    expect(find.text('Dark dashboards'), findsOneWidget); // pinned, picker still open
     final stored = SavesState.fromJson(
       jsonDecode(prefs.getString(kSavesKey)!) as Map<String, Object?>,
     );
@@ -53,23 +53,32 @@ void main() {
     expect(stored.savesIn('dark-dashboards').single.slug, 's001');
   });
 
-  testWidgets('picking an existing collection pins the save', (tester) async {
+  testWidgets('a design pins to many boards, and a second tap takes it off', (tester) async {
     final prefs = await _pump(
       tester,
       const SaveButton('s001'),
-      initial: {kSavesKey: '{"collections":[{"id":"refs","name":"Refs"}]}'},
+      initial: {kSavesKey: '{"collections":[{"id":"refs","name":"Refs"},{"id":"mood","name":"Mood"}]}'},
     );
     await tester.tap(find.bySemanticsLabel('Save'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Move to…'));
+    await tester.tap(find.text('Add to board'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Refs'));
+    await tester.tap(find.text('Mood'));
     await tester.pumpAndSettle();
-    expect(find.text('Move to collection'), findsNothing);
     expect(prefs.getString(kSavesKey), contains('"collectionId":"refs"'));
+    expect(prefs.getString(kSavesKey), contains('"collectionId":"mood"'));
+
+    await tester.tap(find.text('Refs'));
+    await tester.pumpAndSettle();
+    expect(prefs.getString(kSavesKey), isNot(contains('"collectionId":"refs"')));
+
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pin to boards'), findsNothing);
   });
 
-  testWidgets('unsaving shows "Removed" without Move to…; Dismiss hides it', (tester) async {
+  testWidgets('unsaving shows "Removed" without Add to board; Dismiss hides it', (tester) async {
     await _pump(tester, const SaveButton('s001', variant: SaveButtonVariant.solid));
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
@@ -79,7 +88,7 @@ void main() {
     await tester.tap(button);
     await tester.pumpAndSettle();
     expect(find.text('Removed'), findsOneWidget);
-    expect(find.text('Move to…'), findsNothing);
+    expect(find.text('Add to board'), findsNothing);
 
     await tester.tap(find.text('Dismiss'));
     await tester.pumpAndSettle();

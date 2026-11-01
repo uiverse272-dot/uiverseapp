@@ -10,7 +10,7 @@ import '../../widgets/core/ink_box.dart';
 import '../../widgets/core/ui_icon.dart';
 
 /// Collection pills (§10.14): "All" + one per collection with counts, then a
-/// dashed "New collection" button that becomes an inline name input.
+/// dashed "New board" button that becomes an inline name input.
 /// [active] is a collection id or `all`; [onCreate] gets the trimmed name.
 class CollectionPills extends StatefulWidget {
   const CollectionPills({
@@ -133,7 +133,7 @@ class _NewCollectionButton extends StatelessWidget {
     final c = context.ui;
     return HoverTap(
       onTap: onTap,
-      label: 'New collection',
+      label: 'New board',
       minSize: const Size(0, 48),
       builder: (context, hovered) {
         final Color fg = hovered ? c.text : c.text2;
@@ -148,7 +148,7 @@ class _NewCollectionButton extends StatelessWidget {
               children: [
                 UiIcon(Ui.plus, size: 14, color: fg),
                 const SizedBox(width: 6),
-                Text('New collection', style: UiText.body.copyWith(color: fg)),
+                Text('New board', style: UiText.body.copyWith(color: fg)),
               ],
             ),
           ),
@@ -214,7 +214,7 @@ class _NewCollectionInputState extends State<_NewCollectionInput> {
         style: UiText.body.copyWith(color: c.text),
         cursorColor: c.text,
         decoration: bareInput(
-          hintText: 'Collection name',
+          hintText: 'Board name',
           hintStyle: UiText.body.copyWith(color: c.text3),
         ),
       ),

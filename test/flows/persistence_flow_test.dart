@@ -14,20 +14,25 @@ import 'flow_harness.dart';
 const String kPickEyebrow = 'PICK OF THE WEEK';
 
 final Finder newCollectionField = find.byWidgetPredicate(
-  (w) => w is TextField && w.decoration?.hintText == 'New collection…',
+  (w) => w is TextField && w.decoration?.hintText == 'New board…',
 );
 
 Brightness shownBrightness(WidgetTester tester) => Theme.of(tester.element(find.byType(Rail))).brightness;
 
-/// Saves the [i]th feed card from its icon and opens "Move to…".
+/// Saves the [i]th feed card from its icon and opens "Add to board".
 Future<Item> saveCardAndPick(WidgetTester tester, int i) async {
   final Finder card = find.byType(FeedCard).at(i);
   final Item item = tester.widget<FeedCard>(card).item;
   await tester.tap(inside(card, find.bySemanticsLabel('Save')));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Move to…'));
+  await tester.tap(find.text('Add to board'));
   await tester.pumpAndSettle();
   return item;
+}
+
+Future<void> closePicker(WidgetTester tester) async {
+  await tester.tap(find.text('Done'));
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -53,10 +58,12 @@ void main() {
     await tester.enterText(newCollectionField, 'Keepers');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
+    await closePicker(tester);
 
     final Item b = await saveCardAndPick(tester, 1);
     await tester.tap(inside(find.byType(SaveToast), find.text('Keepers')));
     await tester.pumpAndSettle();
+    await closePicker(tester);
     expect(app.container.read(savesProvider).savesIn('keepers').map((e) => e.slug), [b.slug, a.slug]);
 
     // 3. Restart: a fresh store seeded with what was written.
@@ -91,6 +98,7 @@ void main() {
     await tester.enterText(newCollectionField, 'Later');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
+    await closePicker(tester);
 
     final again = await pumpFlowApp(tester, width: 767, location: '/saved', prefs: app.prefs);
     expect(find.bySemanticsLabel('Switch to light theme'), findsOneWidget);

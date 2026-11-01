@@ -19,7 +19,7 @@ Map<String, Object> _prefs(List<(String, String?)> saves, {List<SaveCollection> 
     };
 
 final Finder _nameInput =
-    find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Collection name');
+    find.byWidgetPredicate((w) => w is TextField && w.decoration?.hintText == 'Board name');
 
 void main() {
   test('savedItems maps saves to items, per view, skipping unknown slugs', () {
@@ -43,7 +43,7 @@ void main() {
       expect(find.text('Saved'), findsWidgets);
       expect(find.text('All 0'), findsOneWidget);
       expect(find.text('Unsorted 0'), findsOneWidget);
-      expect(find.text('New collection'), findsOneWidget);
+      expect(find.text('New board'), findsOneWidget);
       expect(find.text('Nothing saved here yet'), findsOneWidget);
       expect(find.text('Tap the bookmark under any card to save it here.'), findsOneWidget);
     });
@@ -88,28 +88,28 @@ void main() {
     expect(find.text('Spend overview'), findsOneWidget);
   });
 
-  testWidgets('New collection opens an input and creates the collection', (tester) async {
+  testWidgets('New board opens an input and creates the collection', (tester) async {
     final app = await pumpDiscovery(tester, location: '/saved');
-    await tester.tap(find.text('New collection'));
+    await tester.tap(find.text('New board'));
     await tester.pumpAndSettle();
-    expect(find.text('New collection'), findsNothing);
+    expect(find.text('New board'), findsNothing);
     expect(_nameInput, findsOneWidget);
 
     await tester.enterText(_nameInput, '  Moodboard ');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
     expect(find.text('Moodboard 0'), findsOneWidget);
-    expect(find.text('New collection'), findsOneWidget);
+    expect(find.text('New board'), findsOneWidget);
     expect(app.prefs.getString(kSavesKey), contains('"name":"Moodboard"'));
   });
 
   testWidgets('an empty name creates nothing', (tester) async {
     await pumpDiscovery(tester, location: '/saved');
-    await tester.tap(find.text('New collection'));
+    await tester.tap(find.text('New board'));
     await tester.pumpAndSettle();
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
-    expect(find.text('New collection'), findsOneWidget);
+    expect(find.text('New board'), findsOneWidget);
     expect(find.textContaining(RegExp(r' 0$')), findsNWidgets(2));
   });
 }

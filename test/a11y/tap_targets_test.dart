@@ -53,7 +53,7 @@ void main() {
       'prompt dialog': (1024, '/screen/s001-ledgerly-homepage', (t) => _tap(t, find.text('Prompt'))),
       'save toast picker': (1024, '/web', (t) async {
         await _tap(t, find.bySemanticsLabel('Save'));
-        await _tap(t, find.text('Move to…'));
+        await _tap(t, find.text('Add to board'));
       }),
     };
     for (final e in states.entries) {

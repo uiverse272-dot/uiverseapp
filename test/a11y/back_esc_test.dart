@@ -113,10 +113,10 @@ void main() {
         await _openOverlay(tester);
         final save = find.descendant(of: find.byType(DetailScreen), matching: find.text('Save'));
         await _tap(tester, save);
-        await _tap(tester, find.text('Move to…'));
-        expect(find.text('Move to collection'), findsOneWidget);
+        await _tap(tester, find.text('Add to board'));
+        expect(find.text('Pin to boards'), findsOneWidget);
         await dismiss(tester);
-        expect(find.text('Move to collection'), findsNothing);
+        expect(find.text('Pin to boards'), findsNothing);
         expect(find.byType(DetailOverlay), findsOneWidget);
         await dismiss(tester);
         expect(find.byType(DetailOverlay), findsNothing);
