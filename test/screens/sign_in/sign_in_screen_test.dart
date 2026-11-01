@@ -68,6 +68,13 @@ void main() {
     expect(find.text('Email me a sign-in link'), findsOneWidget);
   });
 
+  testWidgets('the privacy link opens the policy on the web', (tester) async {
+    final rig = AccountRig();
+    await pumpFlowApp(tester, location: '/sign-in', overrides: rig.overrides);
+    await tapVisible(tester, find.text('Privacy policy'));
+    expect(rig.opened.single.toString(), 'https://uiverse.test/legal/privacy');
+  });
+
   testWidgets('a failed sign-in explains itself', (tester) async {
     final rig = AccountRig()..browserWorks = false;
     await pumpFlowApp(tester, location: '/sign-in', overrides: rig.overrides);

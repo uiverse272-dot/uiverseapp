@@ -141,7 +141,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         const SizedBox(height: 4),
         Align(
           alignment: Alignment.centerLeft,
-          child: LinkInk('Privacy policy', onTap: () => context.go(Routes.legal('privacy'))),
+          child: LinkInk(
+            'Privacy policy',
+            // The policy lives on the web, in one place.
+            onTap: () => ref.read(openBrowserProvider)(Uri.parse('${ref.read(apiUrlProvider)}/legal/privacy')),
+          ),
         ),
       ],
     );

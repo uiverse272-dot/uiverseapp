@@ -4,6 +4,7 @@ import '../../theme/uiverse_colors.dart';
 import '../../theme/uiverse_text.dart';
 import '../../widgets/section/section.dart';
 import '../directory/directory_page.dart';
+import 'takedown_form.dart';
 
 /// A legal document: title and paragraphs.
 typedef LegalDoc = ({String title, List<String> body});
@@ -65,6 +66,7 @@ class LegalScreen extends StatelessWidget {
                     if (i > 0) const SizedBox(height: 16),
                     Text(d.body[i], style: UiText.mono(14.5, height: 1.625, color: c.text2)),
                   ],
+                  if (doc == 'takedown') ...const [SizedBox(height: 32), TakedownForm()],
                 ],
               ),
             ),

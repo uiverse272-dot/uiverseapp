@@ -24,6 +24,7 @@ const List<(String, String, String)> kProfileLinks = [
   ('Upload', Routes.upload, 'Paste a URL — we capture and tag it.'),
   ('Collections', Routes.saved, 'Boards, one per project, with notes.'),
   ('Settings', Routes.pricing, 'Plan, profile, notifications.'),
+  ('Finds', Routes.findsSubmit, 'Send in your own work to be featured.'),
 ];
 
 /// Phone-only "Browse" cards (< 768): screens that live in the rail or the
