@@ -4,4 +4,6 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- tool/fake_server.dart speaks plain http on the emulator. Debug builds only. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>
