@@ -106,6 +106,8 @@ class AuthState {
       AuthState(user: user, expired: expired, waiting: waiting, sentTo: sentTo, failure: failure);
 }
 
+enum DeleteResult { deleted, needsFreshSignIn, failed }
+
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
 
 /// Sign-in flow in `docs/api-v1.md`. Without an API this stays signed out and
@@ -223,6 +225,44 @@ class AuthNotifier extends Notifier<AuthState> {
     } finally {
       _exchanging = false;
     }
+  }
+
+  /// Ends the session here whatever the server says: someone signing out of a
+  /// shared phone can't wait for the network.
+  Future<void> signOut() async {
+    final api = ref.read(apiProvider);
+    final token = await this.token();
+    if (api != null && token != null) {
+      try {
+        await api.signOut(token);
+      } on ApiException catch (e) {
+        debugPrint('auth: server sign-out failed ($e)');
+      }
+    }
+    await _forget();
+  }
+
+  Future<void> _forget() async {
+    await _secrets.delete(_tokenKey);
+    await ref.read(sharedPreferencesProvider).remove(kAuthUserKey);
+    state = const AuthState();
+  }
+
+  /// Deletes the account and everything in it on the server, then forgets it
+  /// here. The server only allows this from a session under an hour old.
+  Future<DeleteResult> deleteAccount() async {
+    final api = ref.read(apiProvider);
+    final token = await this.token();
+    if (api == null || token == null) return DeleteResult.failed;
+    try {
+      await api.deleteAccount(token);
+    } on ApiException catch (e) {
+      debugPrint('auth: delete failed ($e)');
+      if (e.code == 'SESSION_EXPIRED' || e.status == 401) return DeleteResult.needsFreshSignIn;
+      return DeleteResult.failed;
+    }
+    await _forget();
+    return DeleteResult.deleted;
   }
 
   /// The server said 401. Everything local stays; the UI offers sign-in.

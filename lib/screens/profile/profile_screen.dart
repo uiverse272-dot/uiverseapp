@@ -10,6 +10,7 @@ import '../../theme/uiverse_text.dart';
 import '../../widgets/core/hover_tap.dart';
 import '../../widgets/section/section.dart';
 import '../directory/directory_page.dart';
+import 'account_panel.dart';
 
 /// Where `/u/:handle` should go instead: `/source/<handle>` when [handle] is
 /// a known source slug (web `redirect`), otherwise null. Use it in the
@@ -49,9 +50,9 @@ class ProfileScreen extends StatelessWidget {
       children: [
         const PageHeader(
           title: 'Your profile',
-          sub: 'User and creator are one identity. Sign-in, uploads and creator analytics sit behind '
-              'this page in the real build — this prototype ships the discovery half.',
+          sub: 'Your saves, boards and account.',
         ),
+        const AccountPanel(),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 32),
           child: _CardGrid(links: kProfileLinks, twoCol: w >= Bp.sm),

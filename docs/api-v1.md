@@ -128,7 +128,8 @@ Routes sit under `/api/mobile/`, not `/mobile/`: `proxy.ts` rewrites page paths 
 - `POST /api/auth/sign-out`, `Authorization: Bearer`.
 - `POST /api/auth/delete-user`, `Authorization: Bearer`, body `{}`. Cascades through saves, boards and
   pins. Only a session under an hour old may delete; otherwise 400 `{"code": "SESSION_EXPIRED"}`. The
-  app then signs in again, checks the user id is the same, and retries.
+  app then asks for a fresh sign-in and returns to the account page, where the person confirms by
+  typing the address shown, so a sign-in as someone else can't delete the wrong account.
 
 ## Web checklist
 
@@ -143,6 +144,7 @@ In `src/lib/auth.ts`:
       our own route does that redirect and a same-origin `callbackURL` already passes.
 - [ ] Apple's client secret expires within 6 months: note the rotation. Check whether deletion must
       revoke Apple tokens.
+- [ ] Privacy policy and account copy name Google and GitHub; add Apple.
 - [ ] Decide session lifetime. Inactive sessions die after 7 days, and a longer `expiresIn` also
       changes web.
 
